@@ -85,7 +85,7 @@ $('#dr').onchange=e=>{H.S.dir=e.target.value;H.save();theme()};
 
 /* ---------- verse index ---------- */
 function build(){
-  V={};let ck='',cc=0;
+  V={};window.__HIFZ_V=V;let ck='',cc=0;
   H.D.pages.forEach((L,i)=>L.forEach(l=>{
     if(l[0])return;let[s,a]=l[3].split(':').map(Number);
     if(l[3]!=ck){ck=l[3];cc=0}
@@ -346,4 +346,109 @@ window.hook=()=>{
   Q('.page .w[data-v]').forEach(w=>w.classList.toggle('m',H.S.sim!==false&&(!!M[w.dataset.v]||cov(w.dataset.v,+w.dataset.i).length>0)));
 };
 if(H.D)hook();
+})();
+
+/* ---------- Quran search, ayah bookmarks/notes/themes, full-page reader ---------- */
+(()=>{
+  const $=s=>document.querySelector(s), Q=s=>document.querySelectorAll(s), E=(t,h)=>{const e=document.createElement(t);e.innerHTML=h||'';return e};
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const st=document.createElement('style');st.textContent=`
+    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.full-reader header,.full-reader footer{display:none}.full-reader main{padding:0;min-height:100vh;display:flex;align-items:center;justify-content:center}.full-reader .page{border:0;border-radius:0;box-shadow:none;max-width:100vw;min-height:100vh;padding:10px 12px;justify-content:center}.full-reader .page:not([hidden]){width:100%!important}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader #page2{display:none!important}.full-reader .page{font-size:1em}.full-reader dialog{z-index:10}.full-reader #load{min-height:100vh;display:flex;align-items:center}
+    @media(max-width:600px){.srhead{align-items:flex-start;flex-direction:column;gap:2px}.srtext{font-size:21px}.ayahbig{font-size:25px}.aytheme{right:auto;left:100%;margin:0 0 0 5px;max-width:70px}.full-reader .page{padding:4px 6px}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader main{overflow:hidden}.full-reader .w{cursor:default}}`;document.head.appendChild(st);
+
+  const norm=s=>String(s??'').normalize('NFD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/[ٱأإآ]/g,'ا').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/ة/g,'ه').replace(/[\s\u200f\u200e]+/g,' ').trim().toLowerCase();
+  let idx=null, searchMode='all', searchQ='';
+  const S=()=>H.S;
+  const ayahState=k=>{S().ayah=S().ayah||{};S().ayah[k]=Object.assign({bookmark:false,note:'',comment:'',theme:'',highlight:false},S().ayah[k]||{});return S().ayah[k]};
+  const getAyahText=k=>H.D&&H.D.surahs?((H.V&&H.V[k]&&H.V[k].t)||[]).join(' '):'';
+  const buildIndex=()=>{
+    if(idx||!window.MN&&false)return idx;
+    const rows=[]; if(!H.V||!H.D)return rows;
+    Object.keys(H.V).forEach(k=>{
+      const [s,a]=k.split(':').map(Number),v=H.V[k];
+      rows.push({k,s,a,page:v.p,arabic:(v.t||[]).join(' '),urdu:window.MN&&MN.tu?MN.tu[k]||'':'',english:window.MN&&MN.te?MN.te[k]||'':''});
+    });
+    idx=rows;return idx;
+  };
+  const loadTranslations=()=>{
+    if(window.MN)return Promise.resolve(window.MN);
+    return fetch('data/meanings.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{window.MN=j;return j});
+  };
+  const ensureSearchDialog=()=>{
+    if($('#searchDlg'))return;
+    document.body.appendChild(E('dialog',`<h2>Quran Search</h2>
+      <div class="row"><input id="sq" type="search" placeholder="Search Arabic, Urdu or English…" autocomplete="off" style="flex:1;min-width:220px"></div>
+      <div class="row"><label>Search in <select id="sm"><option value="all">All text</option><option value="ar">Arabic</option><option value="ur">Urdu translation</option><option value="en">English translation</option></select></label><button id="sgo">Search</button></div>
+      <p id="sstatus" role="status"></p><div id="sresults"></div><div class="row"><button data-x>Close</button></div>`));
+    const d=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#sq'));d.id='searchDlg';const q=$('#sq');
+    $('#sgo').onclick=runSearch;q.onkeydown=e=>{if(e.key==='Enter')runSearch()};
+    $('#sm').value=searchMode;
+    d.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)d.close();if(b.dataset.go){d.close();H.go(+b.dataset.go)}if(b.dataset.ayah)showAyah(b.dataset.ayah)};
+  };
+  const runSearch=async()=>{
+    ensureSearchDialog(); const q=$('#sq').value.trim(); searchQ=q;searchMode=$('#sm').value;
+    if(!q){$('#sstatus').textContent='Enter a word or phrase to search.';$('#sresults').innerHTML='';return}
+    $('#sstatus').textContent='Loading translation data…';
+    try{await loadTranslations()}catch(e){if(searchMode!='ar'){$('#sstatus').textContent='Could not load translations. Arabic search is still available.';}}
+    idx=null;const rows=buildIndex(),nq=norm(q);
+    const out=rows.filter(r=>{
+      const fields=searchMode==='ar'?[r.arabic]:searchMode==='ur'?[r.urdu]:searchMode==='en'?[r.english]:[r.arabic,r.urdu,r.english];
+      return fields.some(x=>norm(x).includes(nq));
+    });
+    $('#sstatus').textContent=`${out.length} ayah${out.length===1?'':'s'} found`;
+    $('#sresults').innerHTML=out.slice(0,250).map(r=>`<div class="sr"><div class="srhead"><b>${esc(H.D.surahs[r.s-1])} ${r.s}:${r.a}</b><span>Mushaf page ${r.page}</span></div>${searchMode==='ar'||searchMode==='all'?`<div class="ar srtext">${esc(r.arabic)}</div>`:''}${searchMode==='ur'||searchMode==='all'?`<div class="ur srtrans">${esc(r.urdu)}</div>`:''}${searchMode==='en'||searchMode==='all'?`<div class="srtrans">${esc(r.english)}</div>`:''}<div class="row"><button data-go="${r.page}">Go to page</button><button data-ayah="${r.k}">Ayah tools</button></div></div>`).join('')||'<p>No matching ayahs.</p>';
+    if(out.length>250)$('#sstatus').textContent+=` (showing first 250)`;
+  };
+  const ensureAyahDialog=()=>{
+    if($('#ayahDlg'))return;
+    document.body.appendChild(E('dialog',`<div id="ayahBody"></div>`));
+    const ad=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#ayahBody'));ad.id='ayahDlg';
+    $('#ayahDlg').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined){$('#ayahDlg').close();return}if(b.dataset.go){$('#ayahDlg').close();H.go(+b.dataset.go)}if(b.dataset.savefields){saveAyah(b.dataset.savefields,'fields')}};
+  };
+  const showAyah=k=>{
+    ensureAyahDialog();const st=ayahState(k),r=H.V[k], [s,a]=k.split(':').map(Number);
+    const old=st;
+    $('#ayahBody').innerHTML=`<h2>${esc(H.D.surahs[s-1])} ${s}:${a}</h2><p class="ar ayahbig">${esc((r.t||[]).join(' '))}</p><p><b>Mushaf page:</b> ${r.p}</p>
+      <div class="row"><button id="ab" data-save="${esc(k)}">${st.bookmark?'Remove bookmark':'Bookmark ayah'}</button><button id="ah" data-save="${esc(k)}">${st.highlight?'Remove highlight':'Highlight ayah'}</button></div>
+      <div class="row"><label>Theme code <input id="ath" value="${esc(st.theme)}" placeholder="e.g. sabr, dua, warning" style="min-width:190px"></label></div>
+      <label style="display:block">Note<textarea id="anote" rows="3" style="width:100%;margin-top:6px">${esc(st.note)}</textarea></label>
+      <label style="display:block;margin-top:10px">Comment<textarea id="acmt" rows="3" style="width:100%;margin-top:6px">${esc(st.comment)}</textarea></label>
+      <p id="asaved" role="status"></p><div class="row"><button data-savefields="${esc(k)}">Save note / comment / theme</button><button data-x>Close</button><button data-go="${r.p}" id="ago">Go to Mushaf page</button></div>`;
+    $('#ayahDlg').querySelector('#ab').onclick=()=>saveAyah(k,'bookmark');
+    $('#ayahDlg').querySelector('#ah').onclick=()=>saveAyah(k,'highlight');
+    if(!$('#ayahDlg').open)$('#ayahDlg').showModal();
+  };
+  const saveAyah=(k,action)=>{
+    const st=ayahState(k);
+    if(action==='bookmark')st.bookmark=!st.bookmark;
+    if(action==='highlight')st.highlight=!st.highlight;
+    if($('#ath'))st.theme=$('#ath').value.trim();
+    if($('#anote'))st.note=$('#anote').value;
+    if($('#acmt'))st.comment=$('#acmt').value;
+    S().ayah[k]=st;H.save();applyAyahMarks();showAyah(k);
+  };
+  const applyAyahMarks=()=>{
+    if(!H.V)return;
+    Q('.w[data-v]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v]||{};w.classList.toggle('ayahhl',!!st.highlight);w.classList.toggle('abm',!!st.bookmark);w.dataset.theme=st.theme||'';});
+    Q('.aytheme').forEach(x=>x.remove());
+    Q('.page .w[data-i="1"]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v];if(st&&st.theme){const m=document.createElement('span');m.className='aytheme';m.textContent=st.theme;m.title='Theme: '+st.theme;w.parentNode.appendChild(m)}});
+  };
+  const addAyahSearchButton=()=>{
+    const bar=document.querySelector('.ctl');if(!bar||$('#qsearch'))return;
+    const b=document.createElement('button');b.id='qsearch';b.textContent='Search';b.onclick=()=>{ensureSearchDialog();$('#sq').value='';$('#sstatus').textContent='';$('#sresults').innerHTML='';$('#searchDlg').showModal();setTimeout(()=>$('#sq').focus(),0)};bar.appendChild(b);
+    const f=document.createElement('button');f.id='full';f.textContent='Full page';f.setAttribute('aria-pressed',!!S().full);f.onclick=toggleFull;bar.appendChild(f);
+  };
+  const toggleFull=()=>{S().full=!S().full;H.save();document.body.classList.toggle('full-reader',!!S().full);$('#full').setAttribute('aria-pressed',!!S().full);if(H.render)H.render()};
+  const fullOnLoad=()=>{if(S().full){document.body.classList.add('full-reader');const b=$('#full');if(b)b.setAttribute('aria-pressed','true')}};
+  // Patch the existing word/ayah click handler by capturing clicks before it reaches the older handler.
+  document.addEventListener('click',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;if(w.textContent.includes('\u06dd')){e.stopImmediatePropagation();showAyah(w.dataset.v)}},true);
+  // Add a keyboard shortcut: / opens search, F toggles full page when not typing.
+  document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='/'){e.preventDefault();$('#qsearch')?.click()}if(e.key.toLowerCase()==='f')$('#full')?.click()});
+  let ftaps=0,ftimer=null;document.addEventListener('click',e=>{if(!S().full||e.clientX>70||e.clientY>70)return;ftaps++;clearTimeout(ftimer);ftimer=setTimeout(()=>ftaps=0,900);if(ftaps>=3){ftaps=0;$('#full')?.click()}},{passive:true});
+  // Wait for the existing app data to become ready.
+  const boot=()=>{if(!window.H||!H.D){setTimeout(boot,100);return}addAyahSearchButton();fullOnLoad();
+    const oldRender=H.render;H.render=function(){oldRender();applyAyahMarks();fullOnLoad()};
+    applyAyahMarks();
+  };
+  boot();
 })();
