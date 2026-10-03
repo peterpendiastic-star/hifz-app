@@ -363,140 +363,43 @@ if(H.D)hook();
   const $=s=>document.querySelector(s), Q=s=>document.querySelectorAll(s), E=(t,h)=>{const e=document.createElement(t);e.innerHTML=h||'';return e};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const st=document.createElement('style');st.textContent=`
-    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.hasayahnote::after{content:'📝';position:absolute;top:-.45em;right:-.25em;font:12px/1 system-ui,sans-serif;pointer-events:none}.ayah-actions{display:flex;gap:8px;flex-wrap:wrap}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.full-reader header,.full-reader footer{display:none}.full-reader main{position:fixed;inset:0;z-index:5;margin:0;padding:24px 64px;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:auto;background:var(--bg)}.full-reader .page{border:0;border-radius:0;box-shadow:none;min-height:0;height:auto;padding:12px 32px;justify-content:center;max-width:min(760px,calc(100vw - 128px));background:var(--paper)}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader .page{font-size:1em}.full-reader dialog{z-index:20}.full-reader #load{min-height:100vh;display:flex;align-items:center}.full-reader .full-exit{display:flex}.full-exit{display:none;position:fixed;z-index:100;top:14px;right:14px;width:44px;height:44px;min-height:44px;padding:0;align-items:center;justify-content:center;border-radius:50%;font-size:28px;line-height:1;background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,.18)}.full-exit span{display:block;transform:translateY(-1px)}
-    @media(max-width:600px){.srhead{align-items:flex-start;flex-direction:column;gap:2px}.srtext{font-size:21px}.ayahbig{font-size:25px}.aytheme{right:auto;left:100%;margin:0 0 0 5px;max-width:70px}.full-reader main{padding:8px 6px;overflow:auto}.full-reader .page{padding:4px 6px;max-width:calc(100vw - 12px)}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .w{cursor:default}.full-exit{top:8px;right:8px;width:40px;height:40px;font-size:25px}.ayah-tool{width:22px;height:22px;min-height:22px;font-size:13px;line-height:20px;margin-left:3px}}`;document.head.appendChild(st);
+    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.w.hasayahnote::after{content:'📝';position:absolute;top:-.45em;right:-.25em;font:12px/1 system-ui,sans-serif;pointer-events:none}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.mark-mode{outline:2px solid var(--accent);outline-offset:-2px;background:var(--tint)}.mark-mode-active{background:var(--accent)!important;color:var(--paper)!important}.marks-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.marks-list{max-height:60vh;overflow:auto}.mark-row{border-top:1px solid var(--line);padding:10px 0}.mark-row-head{display:flex;justify-content:space-between;gap:10px}.mark-row small{color:var(--muted)}
+    .full-reader header,.full-reader footer{display:none}.full-reader main{position:fixed;inset:0;z-index:5;margin:0;padding:24px 64px;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:auto;background:var(--bg)}.full-reader .page{border:0;border-radius:0;box-shadow:none;min-height:0;height:auto;padding:12px 32px;justify-content:center;max-width:min(760px,calc(100vw - 128px));background:var(--paper)}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader .page{font-size:1em}.full-reader dialog{z-index:20}.full-reader .full-exit{display:flex}.full-exit{display:none;position:fixed;z-index:100;top:14px;right:14px;width:44px;height:44px;min-height:44px;padding:0;align-items:center;justify-content:center;border-radius:50%;font-size:28px;line-height:1;background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,.18)}.full-exit span{display:block;transform:translateY(-1px)}
+    @media(max-width:600px){.srhead{align-items:flex-start;flex-direction:column;gap:2px}.srtext{font-size:21px}.ayahbig{font-size:25px}.aytheme{right:auto;left:100%;margin:0 0 0 5px;max-width:70px}.full-reader main{padding:8px 6px;overflow:auto}.full-reader .page{padding:4px 6px;max-width:calc(100vw - 12px)}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-exit{top:8px;right:8px;width:40px;height:40px;font-size:25px}}
+  `;document.head.appendChild(st);
 
   const norm=s=>String(s??'').normalize('NFD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/[ٱأإآ]/g,'ا').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/ة/g,'ه').replace(/[\s\u200f\u200e]+/g,' ').trim().toLowerCase();
-  let idx=null, searchMode='all', searchQ='';
+  let idx=null, searchMode='all', markMode=null;
   const S=()=>H.S;
-  const ayahState=k=>{S().ayah=S().ayah||{};S().ayah[k]=Object.assign({bookmark:false,note:'',comment:'',theme:'',highlight:false},S().ayah[k]||{});return S().ayah[k]};
-  const getAyahText=k=>H.D&&H.D.surahs?((H.V&&H.V[k]&&H.V[k].t)||[]).join(' '):'';
-  const buildIndex=()=>{
-    if(idx||!window.MN&&false)return idx;
-    const rows=[]; if(!H.V||!H.D)return rows;
-    Object.keys(H.V).forEach(k=>{
-      const [s,a]=k.split(':').map(Number),v=H.V[k];
-      rows.push({k,s,a,page:v.p,arabic:(v.t||[]).join(' '),urdu:window.MN&&MN.tu?MN.tu[k]||'':'',english:window.MN&&MN.te?MN.te[k]||'':''});
-    });
-    idx=rows;return idx;
-  };
-  const loadTranslations=()=>{
-    if(window.MN)return Promise.resolve(window.MN);
-    return fetch('data/meanings.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{window.MN=j;return j});
-  };
-  const ensureSearchDialog=()=>{
-    if($('#searchDlg'))return;
-    document.body.appendChild(E('dialog',`<h2>Quran Search</h2>
-      <div class="row"><input id="sq" type="search" placeholder="Search Arabic, Urdu or English…" autocomplete="off" style="flex:1;min-width:220px"></div>
-      <div class="row"><label>Search in <select id="sm"><option value="all">All text</option><option value="ar">Arabic</option><option value="ur">Urdu translation</option><option value="en">English translation</option></select></label><button id="sgo">Search</button></div>
-      <p id="sstatus" role="status"></p><div id="sresults"></div><div class="row"><button data-x>Close</button></div>`));
-    const d=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#sq'));d.id='searchDlg';const q=$('#sq');
-    $('#sgo').onclick=runSearch;q.onkeydown=e=>{if(e.key==='Enter')runSearch()};
-    $('#sm').value=searchMode;
-    d.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)d.close();if(b.dataset.go){d.close();H.go(+b.dataset.go)}if(b.dataset.ayah)showAyah(b.dataset.ayah)};
-  };
-  const runSearch=async()=>{
-    ensureSearchDialog(); const q=$('#sq').value.trim(); searchQ=q;searchMode=$('#sm').value;
-    if(!q){$('#sstatus').textContent='Enter a word or phrase to search.';$('#sresults').innerHTML='';return}
-    $('#sstatus').textContent='Loading translation data…';
-    try{await loadTranslations()}catch(e){if(searchMode!='ar'){$('#sstatus').textContent='Could not load translations. Arabic search is still available.';}}
-    idx=null;const rows=buildIndex(),nq=norm(q);
-    const out=rows.filter(r=>{
-      const fields=searchMode==='ar'?[r.arabic]:searchMode==='ur'?[r.urdu]:searchMode==='en'?[r.english]:[r.arabic,r.urdu,r.english];
-      return fields.some(x=>norm(x).includes(nq));
-    });
-    $('#sstatus').textContent=`${out.length} ayah${out.length===1?'':'s'} found`;
-    $('#sresults').innerHTML=out.slice(0,250).map(r=>`<div class="sr"><div class="srhead"><b>${esc(H.D.surahs[r.s-1])} ${r.s}:${r.a}</b><span>Mushaf page ${r.page}</span></div>${searchMode==='ar'||searchMode==='all'?`<div class="ar srtext">${esc(r.arabic)}</div>`:''}${searchMode==='ur'||searchMode==='all'?`<div class="ur srtrans">${esc(r.urdu)}</div>`:''}${searchMode==='en'||searchMode==='all'?`<div class="srtrans">${esc(r.english)}</div>`:''}<div class="row"><button data-go="${r.page}">Go to page</button><button data-ayah="${r.k}">Ayah tools</button></div></div>`).join('')||'<p>No matching ayahs.</p>';
-    if(out.length>250)$('#sstatus').textContent+=` (showing first 250)`;
-  };
-  const ensureAyahDialog=()=>{
-    if($('#ayahDlg'))return;
-    document.body.appendChild(E('dialog',`<div id="ayahBody"></div>`));
-    const ad=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#ayahBody'));ad.id='ayahDlg';
-    $('#ayahDlg').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined){$('#ayahDlg').close();return}if(b.dataset.go){$('#ayahDlg').close();H.go(+b.dataset.go)}if(b.dataset.savefields){saveAyah(b.dataset.savefields,'fields')}};
-  };
-  const showAyah=k=>{
-    ensureAyahDialog();const st=ayahState(k),r=H.V[k], [s,a]=k.split(':').map(Number);
-    const old=st;
-    $('#ayahBody').innerHTML=`<h2>${esc(H.D.surahs[s-1])} ${s}:${a}</h2><p class="ar ayahbig">${esc((r.t||[]).join(' '))}</p><p><b>Mushaf page:</b> ${r.p}</p>
-      <div class="ayah-actions"><button id="ab" data-save="${esc(k)}">${st.bookmark?'Remove bookmark':'Bookmark ayah'}</button><button id="ah" data-save="${esc(k)}">${st.highlight?'Remove highlight':'Highlight ayah'}</button></div>
-      <div class="row"><label>Theme code <input id="ath" value="${esc(st.theme)}" placeholder="e.g. sabr, dua, warning" style="min-width:190px"></label></div>
-      <label style="display:block">Note<textarea id="anote" rows="3" style="width:100%;margin-top:6px">${esc(st.note)}</textarea></label>
-      <label style="display:block;margin-top:10px">Comment<textarea id="acmt" rows="3" style="width:100%;margin-top:6px">${esc(st.comment)}</textarea></label>
-      <p id="asaved" role="status"></p><div class="row"><button data-savefields="${esc(k)}">Save note / comment / theme</button><button data-x>Close</button><button data-go="${r.p}" id="ago">Go to Mushaf page</button></div>`;
-    $('#ayahDlg').querySelector('#ab').onclick=()=>saveAyah(k,'bookmark');
-    $('#ayahDlg').querySelector('#ah').onclick=()=>saveAyah(k,'highlight');
-    if(!$('#ayahDlg').open)$('#ayahDlg').showModal();
-  };
-  const saveAyah=(k,action)=>{
-    const st=ayahState(k);
-    if(action==='bookmark')st.bookmark=!st.bookmark;
-    if(action==='highlight')st.highlight=!st.highlight;
-    if($('#ath'))st.theme=$('#ath').value.trim();
-    if($('#anote'))st.note=$('#anote').value;
-    if($('#acmt'))st.comment=$('#acmt').value;
-    S().ayah[k]=st;H.save();applyAyahMarks();showAyah(k);
-  };
-  const applyAyahMarks=()=>{
-    if(!H.V)return;
-    Q('.ayah-tool').forEach(x=>x.remove());
-    Q('.w[data-v]').forEach(w=>{
-      const st=S().ayah&&S().ayah[w.dataset.v]||{};
-      w.classList.toggle('ayahhl',!!st.highlight);
-      w.classList.toggle('abm',!!st.bookmark);
-      w.classList.remove('hasayahnote');
-      w.dataset.theme=st.theme||'';
-    });
-    Q('.aytheme').forEach(x=>x.remove());
-    Q('.page .w[data-ayah-start="1"]').forEach(w=>{
-      const st=S().ayah&&S().ayah[w.dataset.v]||{};
-      if(st.note||st.comment)w.classList.add('hasayahnote');
-      if(st.theme){
-        const m=document.createElement('span');m.className='aytheme';m.textContent=st.theme;m.title='Theme: '+st.theme;w.appendChild(m);
-      }
-      // A compact ayah-level control is available beside every ayah start.
-      const b=document.createElement('button');
-      b.type='button'; b.className='ayah-tool'+(st.bookmark?' booked':'');
-      b.textContent=st.bookmark?'★':'⋯';
-      b.title='Ayah bookmark, note and comment';
-      b.setAttribute('aria-label','Ayah bookmark, note and comment');
-      b.dataset.ayah=w.dataset.v;
-      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();showAyah(w.dataset.v)});
-      w.appendChild(b);
-    });
-  };
-  const addAyahSearchButton=()=>{
-    const bar=document.querySelector('.ctl');if(!bar||$('#qsearch'))return;
-    const b=document.createElement('button');b.id='qsearch';b.textContent='Search';b.onclick=()=>{ensureSearchDialog();$('#sq').value='';$('#sstatus').textContent='';$('#sresults').innerHTML='';$('#searchDlg').showModal();setTimeout(()=>$('#sq').focus(),0)};bar.appendChild(b);
-    const f=document.createElement('button');f.id='full';f.textContent='Full page';f.setAttribute('aria-pressed',!!S().full);f.onclick=toggleFull;bar.appendChild(f);
-  };
-  const ensureFullExit=()=>{
-    let b=$('#fullExit');
-    if(!b){b=document.createElement('button');b.id='fullExit';b.className='full-exit';b.type='button';b.setAttribute('aria-label','Exit full page');b.title='Exit full page';b.innerHTML='<span aria-hidden="true">×</span>';b.onclick=()=>setFull(false);document.body.appendChild(b)}
-    b.style.display=S().full?'flex':'none';
-    return b;
-  };
-  const setFull=on=>{
-    S().full=!!on;H.save();
-    document.body.classList.toggle('full-reader',S().full);
-    const b=$('#full');if(b)b.setAttribute('aria-pressed',String(S().full));
-    ensureFullExit();
-    if(H.render)H.render();
-    ensureFullExit();
-    if(S().full)window.scrollTo(0,0);
-  };
-  const toggleFull=()=>setFull(!S().full);
-  const fullOnLoad=()=>{document.body.classList.toggle('full-reader',!!S().full);const b=$('#full');if(b)b.setAttribute('aria-pressed',String(!!S().full));ensureFullExit()};
-  // Patch the existing word/ayah click handler by capturing clicks before it reaches the older handler.
-  document.addEventListener('click',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;if(e.target.closest('.ayah-tool'))return;e.stopImmediatePropagation();showAyah(w.dataset.v)},true);
-  document.addEventListener('contextmenu',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;e.preventDefault();showAyah(w.dataset.v)},true);
-  // Add a keyboard shortcut: / opens search, F toggles full page when not typing.
+  const ayahState=k=>{S().ayah=S().ayah||{};S().ayah[k]=Object.assign({bookmark:false,note:'',theme:'',highlight:false},S().ayah[k]||{});return S().ayah[k]};
+  const buildIndex=()=>{if(idx)return idx;const rows=[];if(!H.V||!H.D)return rows;Object.keys(H.V).forEach(k=>{const [s,a]=k.split(':').map(Number),v=H.V[k];rows.push({k,s,a,page:v.p,arabic:(v.t||[]).join(' '),urdu:window.MN&&MN.tu?MN.tu[k]||'':'',english:window.MN&&MN.te?MN.te[k]||'':''})});idx=rows;return rows};
+  const loadTranslations=()=>{if(window.MN)return Promise.resolve(window.MN);return fetch('data/meanings.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{window.MN=j;return j})};
+
+  const ensureSearchDialog=()=>{if($('#searchDlg'))return;document.body.appendChild(E('dialog',`<h2>Quran Search</h2><div class="row"><input id="sq" type="search" placeholder="Search Arabic, Urdu or English…" autocomplete="off" style="flex:1;min-width:220px"></div><div class="row"><label>Search in <select id="sm"><option value="all">All text</option><option value="ar">Arabic</option><option value="ur">Urdu translation</option><option value="en">English translation</option></select></label><button id="sgo">Search</button></div><p id="sstatus" role="status"></p><div id="sresults"></div><div class="row"><button data-x>Close</button></div>`));const d=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#sq'));d.id='searchDlg';$('#sgo').onclick=runSearch;$('#sq').onkeydown=e=>{if(e.key==='Enter')runSearch};$('#sm').value=searchMode;d.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)d.close();if(b.dataset.go){d.close();H.go(+b.dataset.go)}if(b.dataset.ayah){d.close();activateMode('notes');setTimeout(()=>showNote(b.dataset.ayah),0)}}};
+  const runSearch=async()=>{ensureSearchDialog();const q=$('#sq').value.trim();searchMode=$('#sm').value;if(!q){$('#sstatus').textContent='Enter a word or phrase to search.';$('#sresults').innerHTML='';return}$('#sstatus').textContent='Loading translation data…';try{await loadTranslations()}catch(e){if(searchMode!=='ar')$('#sstatus').textContent='Could not load translations. Arabic search is still available.'}idx=null;const rows=buildIndex(),nq=norm(q),out=rows.filter(r=>{const fields=searchMode==='ar'?[r.arabic]:searchMode==='ur'?[r.urdu]:searchMode==='en'?[r.english]:[r.arabic,r.urdu,r.english];return fields.some(x=>norm(x).includes(nq))});$('#sstatus').textContent=`${out.length} ayah${out.length===1?'':'s'} found`;$('#sresults').innerHTML=out.slice(0,250).map(r=>`<div class="sr"><div class="srhead"><b>${esc(H.D.surahs[r.s-1])} ${r.s}:${r.a}</b><span>Mushaf page ${r.page}</span></div>${searchMode==='ar'||searchMode==='all'?`<div class="ar srtext">${esc(r.arabic)}</div>`:''}${searchMode==='ur'||searchMode==='all'?`<div class="ur srtrans">${esc(r.urdu)}</div>`:''}${searchMode==='en'||searchMode==='all'?`<div class="srtrans">${esc(r.english)}</div>`:''}<div class="row"><button data-go="${r.page}">Go to page</button><button data-ayah="${r.k}">Select ayah for notes</button></div></div>`).join('')||'<p>No matching ayahs.</p>';if(out.length>250)$('#sstatus').textContent+=` (showing first 250)`};
+
+  const ensureNoteDialog=()=>{if($('#noteDlg'))return;document.body.appendChild(E('dialog',`<div id="noteBody"></div>`));const d=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#noteBody'));d.id='noteDlg';d.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)d.close();if(b.dataset.save){saveNote(b.dataset.save)}}};
+  const showNote=k=>{ensureNoteDialog();const st=ayahState(k),r=H.V[k],[s,a]=k.split(':').map(Number);$('#noteBody').innerHTML=`<h2>${esc(H.D.surahs[s-1])} ${s}:${a}</h2><p class="ar ayahbig">${esc((r.t||[]).join(' '))}</p><p><b>Mushaf page:</b> ${r.p}</p><label style="display:block">Note<textarea id="anote" rows="5" style="width:100%;margin-top:6px">${esc(st.note)}</textarea></label><div class="row" style="margin-top:10px"><button data-save="${esc(k)}">Save note</button><button data-x>Close</button><button data-go="${r.p}">Go to Mushaf page</button></div>`;$('#noteDlg').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)$('#noteDlg').close();if(b.dataset.go){$('#noteDlg').close();H.go(+b.dataset.go)}if(b.dataset.save)saveNote(b.dataset.save)};$('#noteDlg').showModal()};
+  const saveNote=k=>{const st=ayahState(k);st.note=$('#anote')?.value||'';delete st.comment;S().ayah[k]=st;H.save();applyAyahMarks();$('#noteDlg').close()};
+
+  const ensureThemeDialog=()=>{if($('#themeDlg'))return;document.body.appendChild(E('dialog',`<div id="themeBody"></div>`));const d=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#themeBody'));d.id='themeDlg';d.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)d.close();if(b.dataset.save)saveTheme(b.dataset.save)}};
+  const showTheme=k=>{ensureThemeDialog();const st=ayahState(k),r=H.V[k],[s,a]=k.split(':').map(Number);$('#themeBody').innerHTML=`<h2>Theme — ${esc(H.D.surahs[s-1])} ${s}:${a}</h2><p class="ar ayahbig">${esc((r.t||[]).join(' '))}</p><label style="display:block">Theme code / name<input id="ath" value="${esc(st.theme)}" placeholder="e.g. sabr, dua, warning" style="width:100%;margin-top:6px"></label><div class="row" style="margin-top:10px"><button data-save="${esc(k)}">Save theme</button><button data-x>Close</button><button data-go="${r.p}">Go to Mushaf page</button></div>`;$('#themeDlg').showModal()};
+  const saveTheme=k=>{const st=ayahState(k);st.theme=$('#ath')?.value.trim()||'';S().ayah[k]=st;H.save();applyAyahMarks();$('#themeDlg').close()};
+
+  const activateMode=mode=>{markMode=markMode===mode?null:mode;['bookmark','notes','theme','highlight'].forEach(x=>{const b=$(`#mark-${x}`);if(b)b.classList.toggle('mark-mode-active',markMode===x)});Q('.page .w[data-v]').forEach(w=>w.classList.toggle('mark-mode',!!markMode));};
+  const selectAyah=k=>{if(!markMode)return;if(markMode==='bookmark'){const st=ayahState(k);st.bookmark=!st.bookmark;S().ayah[k]=st;H.save();applyAyahMarks();return}if(markMode==='highlight'){const st=ayahState(k);st.highlight=!st.highlight;S().ayah[k]=st;H.save();applyAyahMarks();return}if(markMode==='notes')showNote(k);if(markMode==='theme')showTheme(k)};
+
+  const ensureMarksDialog=()=>{if($('#marksDlg'))return;document.body.appendChild(E('dialog',`<h2>My Marks</h2><div class="marks-tabs"><button data-tab="bookmarks">Bookmarks</button><button data-tab="notes">Notes</button><button data-tab="themes">Themes</button></div><div id="marksList" class="marks-list"></div><div class="row"><button data-x>Close</button></div>`));const d=[...document.querySelectorAll('dialog')].find(x=>x.querySelector('#marksList'));d.id='marksDlg';d.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.x!==undefined)d.close();if(b.dataset.tab)renderMarks(b.dataset.tab);if(b.dataset.go){d.close();H.go(+b.dataset.go)}}};
+  const renderMarks=tab=>{ensureMarksDialog();const list=$('#marksList'),data=S().ayah||{},items=Object.keys(data).filter(k=>{const s=data[k]||{};return tab==='bookmarks'?s.bookmark:tab==='notes'?s.note:tab==='themes'?s.theme:false}).sort((a,b)=>{const [as,aa]=a.split(':').map(Number),[bs,ba]=b.split(':').map(Number);return as-bs||aa-ba});if(!items.length){list.innerHTML=`<p>No ${tab} saved yet.</p>`;return}list.innerHTML=items.map(k=>{const [s,a]=k.split(':').map(Number),r=H.V[k],st=data[k];return `<div class="mark-row"><div class="mark-row-head"><b>${esc(H.D.surahs[s-1])} ${s}:${a}</b><small>Mushaf page ${r?.p??''}</small></div>${tab==='notes'?`<div>${esc(st.note)}</div>`:''}${tab==='themes'?`<div><b>${esc(st.theme)}</b></div>`:''}<div class="row"><button data-go="${r?.p??1}">Go to Mushaf page</button></div></div>`}).join('')};
+  const openMarks=tab=>{ensureMarksDialog();renderMarks(tab||'bookmarks');$('#marksDlg').showModal()};
+
+  const applyAyahMarks=()=>{if(!H.V)return;Q('.w[data-v]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v]||{};w.classList.toggle('ayahhl',!!st.highlight);w.classList.toggle('abm',!!st.bookmark);w.classList.remove('hasayahnote');w.dataset.theme=st.theme||''});Q('.aytheme').forEach(x=>x.remove());Q('.page .w[data-ayah-start="1"]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v]||{};if(st.note)w.classList.add('hasayahnote');if(st.theme){const m=document.createElement('span');m.className='aytheme';m.textContent=st.theme;m.title='Theme: '+st.theme;w.appendChild(m)}})};
+
+  const addToolbarButtons=()=>{const bar=document.querySelector('.ctl');if(!bar)return;[['bookmark','Bookmark'],['notes','Notes'],['theme','Theme'],['highlight','Highlight']].forEach(([id,label])=>{if($(`#mark-${id}`))return;const b=document.createElement('button');b.id=`mark-${id}`;b.textContent=label;b.onclick=()=>activateMode(id);bar.appendChild(b)});if(!$('#myMarks')){const b=document.createElement('button');b.id='myMarks';b.textContent='My Marks';b.onclick=()=>openMarks('bookmarks');bar.appendChild(b)}if(!$('#qsearch')){const b=document.createElement('button');b.id='qsearch';b.textContent='Search';b.onclick=()=>{ensureSearchDialog();$('#sq').value='';$('#sstatus').textContent='';$('#sresults').innerHTML='';$('#searchDlg').showModal();setTimeout(()=>$('#sq').focus(),0)};bar.appendChild(b)}if(!$('#full')){const f=document.createElement('button');f.id='full';f.textContent='Full page';f.setAttribute('aria-pressed',!!S().full);f.onclick=toggleFull;bar.appendChild(f)}};
+  const ensureFullExit=()=>{let b=$('#fullExit');if(!b){b=document.createElement('button');b.id='fullExit';b.className='full-exit';b.type='button';b.setAttribute('aria-label','Exit full page');b.title='Exit full page';b.innerHTML='<span aria-hidden="true">×</span>';b.onclick=()=>setFull(false);document.body.appendChild(b)}b.style.display=S().full?'flex':'none';return b};
+  const setFull=on=>{S().full=!!on;H.save();document.body.classList.toggle('full-reader',S().full);const b=$('#full');if(b)b.setAttribute('aria-pressed',String(S().full));ensureFullExit();if(H.render)H.render();ensureFullExit();if(S().full)window.scrollTo(0,0)};const toggleFull=()=>setFull(!S().full);const fullOnLoad=()=>{document.body.classList.toggle('full-reader',!!S().full);const b=$('#full');if(b)b.setAttribute('aria-pressed',String(!!S().full));ensureFullExit()};
+  document.addEventListener('click',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;e.stopImmediatePropagation();if(markMode)selectAyah(w.dataset.v)},true);
   document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='/'){e.preventDefault();$('#qsearch')?.click()}if(e.key==='Escape'&&S().full){e.preventDefault();setFull(false);return}if(e.key.toLowerCase()==='f')$('#full')?.click()});
   let ftaps=0,ftimer=null;document.addEventListener('click',e=>{if(!S().full||e.clientX>70||e.clientY>70)return;ftaps++;clearTimeout(ftimer);ftimer=setTimeout(()=>ftaps=0,900);if(ftaps>=3){ftaps=0;setFull(false)}},{passive:true});
-  // Wait for the existing app data to become ready.
-  const boot=()=>{if(!window.H||!H.D){setTimeout(boot,100);return}addAyahSearchButton();fullOnLoad();
-    const oldRender=H.render;H.render=function(){oldRender();applyAyahMarks();fullOnLoad()};
-    applyAyahMarks();
-  };
-  boot();
+  const boot=()=>{if(!window.H||!H.D){setTimeout(boot,100);return}addToolbarButtons();fullOnLoad();const oldRender=H.render;H.render=function(){oldRender();addToolbarButtons();applyAyahMarks();fullOnLoad()};applyAyahMarks()};boot();
 })();
