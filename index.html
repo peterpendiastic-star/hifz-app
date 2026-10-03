@@ -23,24 +23,24 @@ button,select,input{font:inherit;color:var(--ink);background:var(--paper);border
 button{cursor:pointer}button:disabled{opacity:.4;cursor:default}button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 #pg{width:72px}label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
-main{padding:16px 10px 10px;display:flex;justify-content:center;gap:12px;align-items:flex-start;min-height:calc(100vh - 150px)}
+main{padding:16px 10px 10px;display:flex;direction:rtl;justify-content:center;gap:12px;align-items:flex-start;min-height:calc(100vh - 150px)}
 .page[hidden]{display:none}
 #load{color:var(--muted);padding:40px 10px;text-align:center;max-width:32em}
-.page{position:relative;flex:0 0 auto;padding:0 10px 8px;background:var(--paper);border-radius:4px;display:flex;flex-direction:column;box-shadow:0 3px 12px #00000012}
+.page{position:relative;flex:0 0 auto;padding:0 10px 8px;background:var(--paper);border-radius:4px;display:flex;flex-direction:column;box-shadow:0 3px 12px #00000012;min-width:0}
 .page.short{justify-content:center}.page.done{box-shadow:0 0 0 3px var(--accent),0 3px 12px #00000012}
-.page-meta{height:42px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;direction:ltr;color:var(--ink);font-family:Khatt,serif;font-size:clamp(18px,2.2vw,27px);line-height:1;white-space:nowrap;padding:2px 4px 0}
-.page-meta .surah-name{justify-self:start;direction:rtl}.page-meta .page-no{justify-self:center;direction:rtl;font-size:1.05em}.page-meta .juz-name{justify-self:end;direction:rtl;font-size:.78em;color:var(--muted)}
-.page-frame{padding:8px 14px 10px;background:var(--paper);border:3px double var(--accent);border-radius:2px;display:flex;flex-direction:column;overflow:hidden}
-.line{position:relative;display:flex;justify-content:space-between;align-items:center;direction:rtl;white-space:nowrap;font-size:var(--fs,40px);height:calc(var(--fs,40px)*1.7);border-bottom:1px solid var(--line)}
-.line:last-child{border-bottom:0}.line.c{justify-content:center;gap:.22em}.w{flex:none;font-family:Khatt,serif;line-height:1.7;cursor:default}.w.hid:not(.r){color:transparent;background:var(--mask);border-radius:.18em;cursor:pointer}
+.page-meta{height:42px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;direction:ltr;color:var(--ink);font-family:Khatt,serif;font-size:clamp(18px,2.2vw,27px);line-height:1;white-space:nowrap;padding:2px 4px 0}.page-meta .surah-name{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;font-size:.78em;letter-spacing:.01em}
+.page-meta .surah-name{justify-self:start;direction:ltr}.page-meta .page-no{justify-self:center;direction:rtl;font-size:1.05em}.page-meta .juz-name{justify-self:end;direction:rtl;font-size:.78em;color:var(--muted)}
+.page-frame{padding:8px 14px 10px;background:var(--paper);border:3px double var(--accent);border-radius:2px;display:flex;flex-direction:column;overflow:visible}
+.line{position:relative;display:flex;justify-content:flex-start;align-items:center;direction:rtl;white-space:nowrap;font-size:var(--fs,40px);height:calc(var(--fs,40px)*1.7);border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}.line.c{justify-content:center;gap:.22em}.line.c .w{margin-left:0}.w{flex:none;font-family:Khatt,serif;line-height:1.7;cursor:default;margin-left:.42em}.w.hid:not(.r){color:transparent;background:var(--mask);border-radius:.18em;cursor:pointer}
 .sur{direction:ltr;justify-content:center;gap:.8em;font-size:calc(var(--fs,40px)*.5);background:var(--tint);border:1px solid var(--accent);border-radius:6px;color:var(--accent)}.sur b{font-weight:650}
 .page-footer{min-height:28px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:Khatt,serif;font-size:clamp(14px,1.7vw,20px);direction:rtl}.page-footer .manzil{margin-left:auto}.page-footer .juz{margin-right:auto}
 footer{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}footer button{min-width:110px}#mid{text-align:center;line-height:1.2}#sn{display:block;color:var(--muted);font-size:.8rem}
 dialog{max-width:34em;width:calc(100% - 24px);border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);padding:18px}dialog::backdrop{background:rgba(0,0,0,.45)}dialog h2{font-size:1.05rem;margin:0 0 8px}dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
 #search{width:min(220px,48vw)}#searchMode{min-width:150px}#searchResults{max-height:65vh;overflow:auto}.sr{display:block;width:100%;text-align:right;margin:6px 0;padding:10px;min-height:auto;white-space:normal}.sr .ar{display:block;font:24px/1.9 Khatt,serif;direction:rtl}.sr .tr{display:block;margin-top:6px;line-height:1.55;white-space:normal}.sr .tr.ur{direction:rtl;text-align:right}.sr .tr.en{direction:ltr;text-align:left}.sr small{display:block;color:var(--muted);text-align:left;margin-top:6px}
-body.reader{background:var(--paper);overflow:hidden}#readerExit{display:none}body.reader #readerExit{display:block;position:fixed;z-index:20;top:max(6px,env(safe-area-inset-top));right:max(6px,env(safe-area-inset-right));width:32px;height:32px;min-height:32px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.18);color:var(--ink);font-size:24px;line-height:30px;opacity:.45}body.reader #readerExit:hover,body.reader #readerExit:focus{opacity:1}body.reader header,body.reader footer{display:none}body.reader main{width:100vw;height:100dvh;min-height:100dvh;padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden}body.reader .page{width:100vw!important;max-width:100vw!important;height:100dvh;max-height:100dvh;padding:0 4px 2px;border-radius:0;box-shadow:none}body.reader .page-frame{flex:1 1 auto;min-height:0;padding:4px 8px 6px;border-width:2px;border-radius:0}body.reader .page-meta{height:clamp(30px,7dvh,52px);flex:0 0 auto;padding-top:0}body.reader .page-footer{height:clamp(20px,4dvh,30px);flex:0 0 auto}body.reader .page2{display:none}
-@media(max-width:700px){header{position:relative}.ctl{gap:5px}button,select,input{max-width:100%;font-size:.9rem}.page{padding:0 4px 6px}.page-meta{height:34px;font-size:20px}.page-frame{padding:6px 7px 8px}.page-footer{min-height:22px;font-size:15px}main{padding:6px 2px;min-height:calc(100dvh - 120px);overflow-x:hidden}.page{max-width:100vw}footer button{min-width:90px}}
-@media(min-width:701px){main .page + .page{order:-1}}
+body.reader{background:var(--paper);overflow:hidden}#readerExit{display:none}body.reader #readerExit{display:block;position:fixed;z-index:20;top:max(6px,env(safe-area-inset-top));right:max(6px,env(safe-area-inset-right));width:32px;height:32px;min-height:32px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.18);color:var(--ink);font-size:24px;line-height:30px;opacity:.45}body.reader #readerExit:hover,body.reader #readerExit:focus{opacity:1}body.reader header,body.reader footer{display:none}body.reader main{width:100vw;height:100dvh;min-height:100dvh;padding:0;display:flex;direction:rtl;align-items:center;justify-content:center;gap:8px;overflow:hidden}body.reader .page{height:auto;max-height:100dvh;padding:0 4px 2px;border-radius:0;box-shadow:none}body.reader .page-frame{flex:0 0 auto;min-height:0;padding:4px 8px 6px;border-width:2px;border-radius:0}body.reader .page-meta{height:clamp(30px,7dvh,52px);flex:0 0 auto;padding-top:0}body.reader .page-footer{height:clamp(20px,4dvh,30px);flex:0 0 auto}
+@media(max-width:700px){header{position:relative}.ctl{gap:5px}button,select,input{max-width:100%;font-size:.9rem}.page{padding:0 4px 6px}.page-meta{height:34px;font-size:20px}.page-meta .surah-name{font-size:.72em}.page-frame{padding:6px 7px 8px}.page-footer{min-height:22px;font-size:15px}main{padding:6px 2px;min-height:calc(100dvh - 120px);overflow-x:hidden}.page{max-width:100vw}footer button{min-width:90px}body.reader main{width:100vw;height:100dvh;padding:0;gap:0}body.reader .page{width:100vw;max-width:100vw;padding:0 2px 2px}body.reader .page-frame{padding:3px 5px 4px;border-width:2px}body.reader .page-meta{height:34px;font-size:20px}body.reader .page-footer{height:22px;font-size:14px}}
+@media(min-width:701px){body.reader main .page{max-width:calc(50vw - 6px)}}
 </style>>
 </head>
 <body>
@@ -59,7 +59,7 @@ body.reader{background:var(--paper);overflow:hidden}#readerExit{display:none}bod
     <button id="full">Full page</button>
   </div>
 </header>
-<button id="readerExit" aria-label="Exit full page">×</button><main><div id="load">Loading the Mushaf...</div><div id="page2" class="page" hidden></div><div id="page" class="page" hidden></div></main>
+<button id="readerExit" aria-label="Exit full page">×</button><main><div id="load">Loading the Mushaf...</div><div id="page" class="page" hidden></div><div id="page2" class="page" hidden></div></main>
 <footer>
   <button id="nx">&#8249; Next page</button>
   <div id="mid"><span id="ind"></span><small id="sn"></small></div>
@@ -82,8 +82,9 @@ body.reader{background:var(--paper);overflow:hidden}#readerExit{display:none}bod
 <script>
 (()=>{
 const $=s=>document.querySelector(s),N=548,LH=1.7,el=$('#page'),el2=$('#page2');
-let D,page=1,S={done:{},last:1},ME={tu:{},te:{}},AY={};
+let D,page=1,S={done:{},last:1,two:true},ME={tu:{},te:{}},AY={};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem('hifz')||'{}'))}catch(e){}
+S.two=S.two!==false;
 const save=()=>{try{localStorage.setItem('hifz',JSON.stringify(S))}catch(e){}};
 
 function go(p){page=Math.max(1,Math.min(N,parseInt(p)||1));S.last=page;save();render();scrollTo(0,0)}
@@ -124,8 +125,10 @@ function draw(el,pn){
   el.classList.toggle('short',L.length<16);
   el.classList.toggle('done',!!S.done[pn]);
 }
+function isPhone(){return matchMedia('(max-width:700px)').matches}
 function render(){
-  const two=!!S.two&&!document.body.classList.contains('reader');
+  const reader=document.body.classList.contains('reader');
+  const two=!!S.two&&(!reader||!isPhone());
   if(two){page=Math.max(1,Math.min(N-1,page%2===0?page-1:page));}
   draw(el,page);el2.hidden=!two;if(two)draw(el2,page+1);
   applyHide();fit();ui();window.hook&&hook();
@@ -141,22 +144,38 @@ function applyHide(){
 }
 
 function fit(){
-  const P=el2.hidden?[el]:[el2,el],n=P.length,G=42;
-  let max=1;
-  P.forEach(p=>{p.style.setProperty('--fs','40px');
-    p.querySelectorAll('.line:not(.sur):not(.c)').forEach(d=>{let w=0;const ws=d.querySelectorAll('.w');ws.forEach(c=>w+=c.offsetWidth);w+=(ws.length-1)*8;max=Math.max(max,w)})});
   const reader=document.body.classList.contains('reader');
-  const aw=reader?Math.max(1,innerWidth-16):(Math.min((innerWidth-50-(n-1)*12)/n,700)-G);
+  const phone=isPhone();
+  const P=el2.hidden?[el]:[el,el2],n=P.length;
+  let max=1;
+  P.forEach(p=>{
+    p.style.setProperty('--fs','40px');
+    p.querySelectorAll('.line:not(.sur):not(.c)').forEach(d=>{
+      let w=0;const ws=d.querySelectorAll('.w');
+      ws.forEach(c=>w+=c.offsetWidth);
+      w+=Math.max(0,ws.length-1)*17;
+      max=Math.max(max,w);
+    });
+  });
+  const headerH=reader?0:document.querySelector('header').offsetHeight;
+  const footerH=reader?0:document.querySelector('footer').offsetHeight;
+  const availH=Math.max(180,innerHeight-headerH-footerH-(reader?10:45));
+  const gap=n>1?8:0;
+  const availW=Math.max(120,(innerWidth-(reader?8:24)-gap*(n-1))/n);
   const metaH=reader?Math.min(52,Math.max(30,innerHeight*.07)):42;
   const footH=reader?Math.min(30,Math.max(20,innerHeight*.04)):28;
-  const ah=Math.max(100,innerHeight-(reader?metaH+footH:document.querySelector('header').offsetHeight+document.querySelector('footer').offsetHeight+45));
-  const fs=Math.max(10,Math.min(40*aw/max,ah/(16*LH),60));
-  P.forEach(p=>{p.style.setProperty('--fs',fs+'px');
-    const w=reader?innerWidth:Math.ceil(max*fs/40)+G;
-    p.style.width=Math.max(1,w)+'px';p.style.maxWidth=reader?'100vw':'';
+  const framePad=reader?16:36;
+  const verticalLines=16*LH;
+  const fsByHeight=(availH-metaH-footH-framePad)/(verticalLines);
+  const fsByWidth=((availW-framePad)*40)/max;
+  const fs=Math.max(10,Math.min(40,fsByHeight,fsByWidth));
+  P.forEach(p=>{
+    p.style.setProperty('--fs',fs+'px');
+    const w=Math.min(availW,Math.max(1,Math.ceil(max*fs/40)+framePad));
+    p.style.width=w+'px';
+    p.style.maxWidth=availW+'px';
   });
 }
-
 function ui(){
   const n=Object.keys(S.done).length;
   let si=0;D.surahPage.forEach((p,i)=>{if(p<=page)si=i});

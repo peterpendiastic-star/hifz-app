@@ -15,8 +15,8 @@ document.head.appendChild(E('style',`
 #aud{display:none}#aud.on{display:flex}
 dialog hr{border:0;border-top:1px solid var(--line)}
 dialog .row button[data-p]{min-height:34px}
-.mk{position:absolute;right:100%;margin-right:5px;direction:ltr;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.4)/1.15 Khatt,serif;color:var(--accent)}
-.mk.r{right:auto;left:100%;margin:0 0 0 5px;text-align:left;font-size:calc(var(--fs,40px)*.46);line-height:1.15}
+.mk{position:absolute;right:100%;margin-right:7px;direction:rtl;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.38)/1.1 Khatt,serif;color:var(--accent);z-index:3;pointer-events:none}.mk:not(.r){min-width:1.6em}
+.mk.r{right:auto;left:100%;margin:0 0 0 7px;text-align:left;font-size:calc(var(--fs,40px)*.38);line-height:1.1}
 .g{font:26px Khatt,serif;display:inline-block;min-width:1.6em;text-align:center;color:var(--ink)}
 .df{color:#d9534f;font-weight:700}
 .dim{opacity:.5}
