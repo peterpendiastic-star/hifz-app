@@ -19,7 +19,7 @@ document.head.appendChild(E('style',`
 #aud{display:none}#aud.on{display:flex}
 dialog hr{border:0;border-top:1px solid var(--line)}
 dialog .row button[data-p]{min-height:34px}
-.mk{position:absolute;right:100%;margin-right:5px;direction:ltr;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.4)/1.15 Khatt,serif;color:var(--accent)}
+.mk{position:absolute;top:50%;transform:translateY(-50%);direction:ltr;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.4)/1.15 Khatt,serif;color:var(--accent);pointer-events:none;z-index:3}.mk.r{left:100%;margin-left:8px;right:auto;text-align:left;font-size:calc(var(--fs,40px)*.62);line-height:1.15}
 .page{position:relative}
 main{padding-top:34px;padding-bottom:34px}
 .hd,.ft{position:absolute;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-end;direction:ltr;color:var(--ink);font:calc(var(--fs,40px)*.78)/1.3 Khatt,serif;white-space:nowrap}
@@ -28,7 +28,7 @@ main{padding-top:34px;padding-bottom:34px}
 .ft{top:100%;justify-content:center;padding-top:2px}
 .sur b{font:calc(var(--fs,40px)*.78)/1.3 Khatt,serif}
 .page{min-height:calc(var(--fs,40px)*27.2 + 30px)}
-.mk.r{right:auto;left:100%;margin:0 0 0 5px;text-align:left;font-size:calc(var(--fs,40px)*.62);line-height:1.15}
+
 [data-rule=on] .page .line:not(.sur):not(:last-child){border-bottom:1px solid var(--line);border-bottom-color:color-mix(in srgb,var(--ink) 24%,transparent)}
 .g{font:26px Khatt,serif;display:inline-block;min-width:1.6em;text-align:center;color:var(--ink)}
 .df{color:#d9534f;font-weight:700}
@@ -320,14 +320,15 @@ function setRub(j){
 try{fetch('data/rub.json').then(r=>r.ok?r.json():0).then(j=>j&&setRub(j)).catch(()=>{})}catch(x){}
 function marks(){
   Q('.mk').forEach(m=>m.remove());
-  const L=new Map(),add=(w,t)=>{const l=w.parentNode;(L.get(l)||L.set(l,[]).get(l)).push(t)};
-  Q('.page .w[data-i="1"]').forEach(w=>{const t=RB[w.dataset.v];t&&add(w,t)});
+  const add=(w,t)=>{if(!w||!t)return;const m=E('span',t);m.className='mk r';w.appendChild(m)};
+  // Rub/nisf/salasa belong to the START of the ayah, not the end of its line.
+  Q('.page .w[data-ayah-start="1"]').forEach(w=>{const t=RB[w.dataset.v];if(t)add(w,t)});
+  // Ruku/sajdah symbols are attached to the ayah-ending marker, and stay on that word.
   Q('.page .w[data-v]').forEach(w=>{
-    if(w.textContent.charCodeAt(0)!=0x6dd)return;
+    if(!w.textContent.includes('\u06dd'))return;
     const k=w.dataset.v,t=[R[k]?'\u0639'+num(R[k]):'',SAJ.has(k)?'\u06E9':''].filter(Boolean).join(' ');
-    t&&add(w,t);
+    if(t)add(w,t);
   });
-  L.forEach((a,l)=>{const m=E('span',a.join('<br>'));m.className='mk r';l.appendChild(m)});
 }
 function frames(){
   [[H.el,H.page],[$('#page2'),H.page+1]].forEach(([pe,pn])=>{
@@ -353,7 +354,7 @@ if(H.D)hook();
   const $=s=>document.querySelector(s), Q=s=>document.querySelectorAll(s), E=(t,h)=>{const e=document.createElement(t);e.innerHTML=h||'';return e};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const st=document.createElement('style');st.textContent=`
-    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.full-reader header,.full-reader footer{display:none}.full-reader main{position:fixed;inset:0;z-index:5;margin:0;padding:24px 64px;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:auto;background:var(--bg)}.full-reader .page{border:0;border-radius:0;box-shadow:none;min-height:0;height:auto;padding:12px 32px;justify-content:center;max-width:min(760px,calc(100vw - 128px));background:var(--paper)}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader .page{font-size:1em}.full-reader dialog{z-index:20}.full-reader #load{min-height:100vh;display:flex;align-items:center}.full-reader .full-exit{display:flex}.full-exit{display:none;position:fixed;z-index:100;top:14px;right:14px;width:44px;height:44px;min-height:44px;padding:0;align-items:center;justify-content:center;border-radius:50%;font-size:28px;line-height:1;background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,.18)}.full-exit span{display:block;transform:translateY(-1px)}
+    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.hasayahnote::after{content:'📝';position:absolute;top:-.45em;right:-.25em;font:12px/1 system-ui,sans-serif;pointer-events:none}.ayah-actions{display:flex;gap:8px;flex-wrap:wrap}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.full-reader header,.full-reader footer{display:none}.full-reader main{position:fixed;inset:0;z-index:5;margin:0;padding:24px 64px;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:auto;background:var(--bg)}.full-reader .page{border:0;border-radius:0;box-shadow:none;min-height:0;height:auto;padding:12px 32px;justify-content:center;max-width:min(760px,calc(100vw - 128px));background:var(--paper)}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader .page{font-size:1em}.full-reader dialog{z-index:20}.full-reader #load{min-height:100vh;display:flex;align-items:center}.full-reader .full-exit{display:flex}.full-exit{display:none;position:fixed;z-index:100;top:14px;right:14px;width:44px;height:44px;min-height:44px;padding:0;align-items:center;justify-content:center;border-radius:50%;font-size:28px;line-height:1;background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,.18)}.full-exit span{display:block;transform:translateY(-1px)}
     @media(max-width:600px){.srhead{align-items:flex-start;flex-direction:column;gap:2px}.srtext{font-size:21px}.ayahbig{font-size:25px}.aytheme{right:auto;left:100%;margin:0 0 0 5px;max-width:70px}.full-reader main{padding:8px 6px;overflow:auto}.full-reader .page{padding:4px 6px;max-width:calc(100vw - 12px)}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .w{cursor:default}.full-exit{top:8px;right:8px;width:40px;height:40px;font-size:25px}}`;document.head.appendChild(st);
 
   const norm=s=>String(s??'').normalize('NFD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/[ٱأإآ]/g,'ا').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/ة/g,'ه').replace(/[\s\u200f\u200e]+/g,' ').trim().toLowerCase();
@@ -409,7 +410,7 @@ if(H.D)hook();
     ensureAyahDialog();const st=ayahState(k),r=H.V[k], [s,a]=k.split(':').map(Number);
     const old=st;
     $('#ayahBody').innerHTML=`<h2>${esc(H.D.surahs[s-1])} ${s}:${a}</h2><p class="ar ayahbig">${esc((r.t||[]).join(' '))}</p><p><b>Mushaf page:</b> ${r.p}</p>
-      <div class="row"><button id="ab" data-save="${esc(k)}">${st.bookmark?'Remove bookmark':'Bookmark ayah'}</button><button id="ah" data-save="${esc(k)}">${st.highlight?'Remove highlight':'Highlight ayah'}</button></div>
+      <div class="ayah-actions"><button id="ab" data-save="${esc(k)}">${st.bookmark?'Remove bookmark':'Bookmark ayah'}</button><button id="ah" data-save="${esc(k)}">${st.highlight?'Remove highlight':'Highlight ayah'}</button></div>
       <div class="row"><label>Theme code <input id="ath" value="${esc(st.theme)}" placeholder="e.g. sabr, dua, warning" style="min-width:190px"></label></div>
       <label style="display:block">Note<textarea id="anote" rows="3" style="width:100%;margin-top:6px">${esc(st.note)}</textarea></label>
       <label style="display:block;margin-top:10px">Comment<textarea id="acmt" rows="3" style="width:100%;margin-top:6px">${esc(st.comment)}</textarea></label>
@@ -429,9 +430,9 @@ if(H.D)hook();
   };
   const applyAyahMarks=()=>{
     if(!H.V)return;
-    Q('.w[data-v]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v]||{};w.classList.toggle('ayahhl',!!st.highlight);w.classList.toggle('abm',!!st.bookmark);w.dataset.theme=st.theme||'';});
+    Q('.w[data-v]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v]||{};w.classList.toggle('ayahhl',!!st.highlight);w.classList.toggle('abm',!!st.bookmark);w.classList.toggle('hasayahnote',!!(st.note||st.comment));w.dataset.theme=st.theme||'';});
     Q('.aytheme').forEach(x=>x.remove());
-    Q('.page .w[data-i="1"]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v];if(st&&st.theme){const m=document.createElement('span');m.className='aytheme';m.textContent=st.theme;m.title='Theme: '+st.theme;w.parentNode.appendChild(m)}});
+    Q('.page .w[data-ayah-start="1"]').forEach(w=>{const st=S().ayah&&S().ayah[w.dataset.v]||{};if(st.theme){const m=document.createElement('span');m.className='aytheme';m.textContent=st.theme;m.title='Theme: '+st.theme;w.appendChild(m)}});
   };
   const addAyahSearchButton=()=>{
     const bar=document.querySelector('.ctl');if(!bar||$('#qsearch'))return;
@@ -457,6 +458,7 @@ if(H.D)hook();
   const fullOnLoad=()=>{document.body.classList.toggle('full-reader',!!S().full);const b=$('#full');if(b)b.setAttribute('aria-pressed',String(!!S().full));ensureFullExit()};
   // Patch the existing word/ayah click handler by capturing clicks before it reaches the older handler.
   document.addEventListener('click',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;if(w.textContent.includes('\u06dd')){e.stopImmediatePropagation();showAyah(w.dataset.v)}},true);
+  document.addEventListener('contextmenu',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;e.preventDefault();showAyah(w.dataset.v)},true);
   // Add a keyboard shortcut: / opens search, F toggles full page when not typing.
   document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='/'){e.preventDefault();$('#qsearch')?.click()}if(e.key==='Escape'&&S().full){e.preventDefault();setFull(false);return}if(e.key.toLowerCase()==='f')$('#full')?.click()});
   let ftaps=0,ftimer=null;document.addEventListener('click',e=>{if(!S().full||e.clientX>70||e.clientY>70)return;ftaps++;clearTimeout(ftimer);ftimer=setTimeout(()=>ftaps=0,900);if(ftaps>=3){ftaps=0;setFull(false)}},{passive:true});

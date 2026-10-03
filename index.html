@@ -103,9 +103,14 @@ function draw(el,pn){
     }else{
       d.className='line'+(l[1]?' c':'')+(l[0]==2?' bsm':'');
       let [vs,va]=(l[3]||'0:0').split(':').map(Number);
+      let ayahStart=true;
       (l[0]==2?D.basmallah:l[2]).split(' ').forEach(w=>{
         const s=document.createElement('span');s.className='w';s.textContent=w;
-        if(l[0]==0){s.dataset.v=vs+':'+va;if(w.charCodeAt(0)==0x6dd)va++}
+        if(l[0]==0){
+          s.dataset.v=vs+':'+va;
+          if(ayahStart){s.dataset.ayahStart='1';ayahStart=false}
+          if(w.includes('\u06dd')){va++;ayahStart=true}
+        }
         d.appendChild(s);
       });
     }
