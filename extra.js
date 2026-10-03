@@ -4,7 +4,7 @@ const E=(t,h)=>{const e=document.createElement(t);e.innerHTML=h||'';return e};
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const loc=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const gap=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
-let V=null,M={},q=[],qi=0,ri=0,rr=0,playing=false;
+let P={},PH={},V=null,M={},q=[],qi=0,ri=0,rr=0,playing=false;
 const A=new Audio();
 
 document.head.appendChild(E('style',`
@@ -17,6 +17,22 @@ dialog hr{border:0;border-top:1px solid var(--line)}
 dialog .row button[data-p]{min-height:34px}
 .mk{position:absolute;right:100%;margin-right:5px;direction:ltr;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.4)/1.15 Khatt,serif;color:var(--accent)}
 .g{font:26px Khatt,serif;display:inline-block;min-width:1.6em;text-align:center;color:var(--ink)}
+.df{color:#d9534f;font-weight:700}
+.dim{opacity:.5}
+.ar.sm{font-size:24px}
+.key{font-size:.8rem}
+.wg{display:flex;flex-wrap:wrap;direction:rtl;gap:6px}
+.wc{text-align:center;border:1px solid var(--line);border-radius:8px;padding:4px 8px;min-width:64px}
+.wc.sel{background:var(--tint);border-color:var(--accent)}
+.wc .a{font:26px/1.8 Khatt,serif;color:var(--ink)}
+.wc small{display:block;font-size:.8rem;line-height:1.3;color:var(--muted)}
+.wc .u{direction:rtl;font-size:.95rem;color:var(--ink)}
+.wc .e{direction:ltr}
+.wc.big{display:inline-block;padding:8px 18px}.wc.big .a{font-size:40px}.wc.big small{font-size:1rem}
+.ur{direction:rtl;font-size:1.15rem;line-height:1.9;color:var(--ink)!important}
+input[type=checkbox]{min-height:auto;width:20px;height:20px}
+.hl{background:var(--tint);color:var(--accent);border-radius:.2em}
+dialog{max-height:88vh;overflow:auto}
 .ar{font:28px/1.9 Khatt,serif;direction:rtl;color:var(--ink)!important}
 `));
 
@@ -33,11 +49,13 @@ function theme(){
   const c=cur();$('#cb').value=c.bg;$('#cp').value=c.paper;$('#ct').value=c.ink;$('#dr').value=ltr?'ltr':'ar';
 }
 const dlg=$('#dlg');
+dlg.insertBefore(E('div',`<h2>Meanings</h2><p>Tap a word to see these.</p><div class="row"><label><input type="checkbox" id="lwu"> Word: Urdu</label><label><input type="checkbox" id="lwe"> Word: English</label><label><input type="checkbox" id="ltu"> Translation: Urdu</label><label><input type="checkbox" id="lte"> Translation: English</label></div>`),dlg.children[0]);
+['wu','we','tu','te'].forEach(id=>{const c=$('#l'+id);c.checked=(H.S.lg||{})[id]!=0;c.onchange=()=>{H.S.lg=Object.assign({wu:1,we:1,tu:1,te:1},H.S.lg||{});H.S.lg[id]=c.checked?1:0;H.save()}});
 dlg.insertBefore(E('div',`<h2>Display</h2>
 <div class="row"><label>Theme <select id="th"><option value="">Auto (device)</option>${Object.keys(PRE).map(k=>`<option>${k}</option>`).join('')}</select></label></div>
 <div class="row"><label>Screen <input type="color" id="cb"></label><label>Page <input type="color" id="cp"></label><label>Text <input type="color" id="ct"></label></div>
 <div class="row"><label>Page turning <select id="dr"><option value="ar">Arabic: next page on the left</option><option value="ltr">Left to right: next page on the right</option></select></label></div>
-<h2>Signs guide</h2><p><span class="g">\\u06D8</span> Stop here (م)</p><p><span class="g">\\u06D9</span> Do not stop (لا)</p><p><span class="g">\\u06D7</span> Stopping is better (قلے)</p><p><span class="g">\\u06D6</span> Continuing is better (صلے)</p><p><span class="g">\\u06DA</span> Stop or continue, both fine (ج)</p><p><span class="g">\\u0615</span> Stopping is fine (ط)</p><p><span class="g">\\u06DB</span> Stop at one of the two dots, not both (معانقہ)</p><p><span class="g">\\u06E9</span> Sajdah: prostration</p><p><span class="g">\\u0639</span> Ruku ends here; the number counts rukus in the surah</p><h2>Mutashabihat</h2><p id="mst"></p>
+<h2>Signs guide</h2><p><span class="g">\u06D8</span> Stop here (م)</p><p><span class="g">\u06D9</span> Do not stop (لا)</p><p><span class="g">\u06D7</span> Stopping is better (قلے)</p><p><span class="g">\u06D6</span> Continuing is better (صلے)</p><p><span class="g">\u06DA</span> Stop or continue, both fine (ج)</p><p><span class="g">\u0615</span> Stopping is fine (ط)</p><p><span class="g">\u06DB</span> Stop at one of the two dots, not both (معانقہ)</p><p><span class="g">\u06E9</span> Sajdah: prostration</p><p><span class="g">\u0639</span> Ruku ends here; the number counts rukus in the surah</p><h2>Mutashabihat</h2><p id="mst"></p>
 <div class="row"><label>Import JSON <input type="file" id="mi" accept=".json,application/json"></label></div>`),dlg.children[0]);
 $('#th').onchange=e=>{const v=e.target.value;H.S.theme=v?{bg:PRE[v][0],paper:PRE[v][1],ink:PRE[v][2],accent:PRE[v][3]}:null;H.save();theme()};
 ['cb','cp','ct'].forEach((id,i)=>$('#'+id).oninput=e=>{const T=H.S.theme||cur();T[['bg','paper','ink'][i]]=e.target.value;H.S.theme=T;H.save();theme()});
@@ -45,33 +63,54 @@ $('#dr').onchange=e=>{H.S.dir=e.target.value;H.save();theme()};
 
 /* ---------- verse index ---------- */
 function build(){
-  V={};
+  V={};let ck='',cc=0;
   H.D.pages.forEach((L,i)=>L.forEach(l=>{
     if(l[0])return;let[s,a]=l[3].split(':').map(Number);
-    l[2].split(' ').forEach(w=>{const k=s+':'+a,v=V[k]||(V[k]={p:i+1,t:[]});if(w.charCodeAt(0)!=0x6dd)v.t.push(w);else a++});
+    if(l[3]!=ck){ck=l[3];cc=0}
+    l[4]=l[2].split(' ').map(w=>{const k=s+':'+a,v=V[k]||(V[k]={p:i+1,t:[]});
+      if(w.charCodeAt(0)!=0x6dd){v.t.push(w);return ++cc}
+      a++;cc=0;ck=s+':'+a;return 0});
   }));
+}
+function tag(){
+  [[H.el,H.page],[$('#page2'),H.page+1]].forEach(([pe,pn])=>{
+    if(pe.hidden)return;const ls=pe.children;
+    H.D.pages[pn-1].forEach((l,i)=>{if(l[0]||!ls[i])return;ls[i].querySelectorAll('.w').forEach((w,j)=>{w.dataset.i=l[4][j]})});
+  });
 }
 const pk=()=>[...new Set([...Q('.page .w[data-v]')].map(w=>w.dataset.v))].sort((a,b)=>{const[x,y]=a.split(':'),[u,v]=b.split(':');return x-u||y-v});
 const nm=k=>H.D.surahs[k.split(':')[0]-1]+' '+k;
 
 /* ---------- mutashabihat ---------- */
 const norm=k=>{const m=String(k).match(/(\d+)\D+(\d+)/);return m?+m[1]+':'+ +m[2]:null};
+function setP(j){
+  PH=j.phrases;P={};
+  Object.entries(PH).forEach(([id,o])=>Object.entries(o).forEach(([k,rs])=>rs.forEach(r=>(P[k]=P[k]||[]).push([r[0],r[1],id]))));
+  $('#mst').textContent=Object.keys(PH).length+' phrases loaded, '+Object.keys(P).length+' ayahs marked.';
+  V&&hook();
+}
+const cov=(k,i)=>(P[k]||[]).filter(r=>i>=r[0]&&i<=r[1]);
+const srt=(a,b)=>{const[x,y]=a.split(':'),[u,v]=b.split(':');return x-u||y-v};
 function setM(j){
+  const f0=j&&!Array.isArray(j)?Object.values(j)[0]:0;
+  if(f0&&f0.ayah)j={phrases:Object.fromEntries(Object.entries(j).map(([i,o])=>[i,o.ayah]))};
+  if(j&&j.phrases)return setP(j);
   let gs=Array.isArray(j)?j:Array.isArray(j.groups)?j.groups:Array.isArray(j.data)?j.data:Object.entries(j).map(([k,v])=>[k].concat(v));
   M={};let n=0;
   gs.forEach(g=>{
     let ks=Array.isArray(g)?g:(g.verses||g.ayahs||g.keys||g.refs||[]),note=Array.isArray(g)?'':(g.note||g.text||g.title||'');
-    ks=ks.map(norm).filter(Boolean);n++;
+    ks=ks.map(norm).filter(Boolean);if(ks.length<2)return;n++;
     ks.forEach(k=>(M[k]=M[k]||[]).push({ks,note}));
   });
+  if(!n){$('#mst').textContent='No usable data in that file. The built-in mutashabihat data is used instead.';return}
   $('#mst').textContent=n+' groups loaded, '+Object.keys(M).length+' ayahs marked.';
   V&&hook();
 }
 $('#mst').textContent='None loaded. Import your JSON below.';
 $('#mi').onchange=e=>{const f=e.target.files[0];if(!f)return;
-  f.text().then(t=>{setM(JSON.parse(t));try{localStorage.setItem('hifzM',t)}catch(x){}}).catch(()=>{$('#mst').textContent='That file could not be read. Check the JSON format.'})};
-try{const t=localStorage.getItem('hifzM');
-  if(t)setM(JSON.parse(t));else fetch('data/mutashabihat.json').then(r=>r.ok?r.json():0).then(j=>j&&setM(j)).catch(()=>{})}catch(x){}
+  f.text().then(t=>{setM(JSON.parse(t));if(Object.keys(M).length)try{localStorage.setItem('hifzM',t)}catch(x){}}).catch(()=>{$('#mst').textContent='That file could not be read. Check the JSON format.'})};
+fetch('data/mutashabihat.json').then(r=>r.ok?r.json():Promise.reject()).then(j=>{setM(j);try{localStorage.removeItem('hifzM')}catch(e){}})
+  .catch(()=>{try{const t=localStorage.getItem('hifzM');if(t)setM(JSON.parse(t))}catch(e){}});
 const md=E('dialog');document.body.appendChild(md);
 function show(k){
   const t=x=>V[x]?esc(V[x].t.join(' ')):'';
@@ -82,10 +121,74 @@ function show(k){
   });
   md.innerHTML=h+'<div class="row"><button data-x>Close</button></div>';md.showModal();
 }
-md.onclick=e=>{const b=e.target.closest('button');if(!b)return;md.close();if(b.dataset.p)H.go(b.dataset.p)};
+let LP=null;
+function lcs(A,B){const n=A.length,m=B.length,d=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=1;i<=n;i++)for(let j=1;j<=m;j++)d[i][j]=A[i-1]==B[j-1]?d[i-1][j-1]+1:Math.max(d[i-1][j],d[i][j-1]);
+  const r=new Array(m).fill(false);let i=n,j=m;
+  while(i&&j){if(A[i-1]==B[j-1]){r[j-1]=true;i--;j--}else if(d[i-1][j]>=d[i][j-1])i--;else j--}
+  return r}
+const sn=w=>w.normalize('NFD').replace(/[\p{M}\u0640\u06DD-\u06E9]/gu,'');
+function showP(k,rs,all){
+  all=all||{};LP={k,rs,all};
+  rs=[...rs].sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]));
+  const inr=(rg,i)=>rg.some(r=>i>=r[0]&&i<=r[1]);
+  const tok=(x,rg,ref)=>{const t=V[x]?V[x].t:[];let m=[];
+    if(ref){m=lcs(ref,t.slice(rg[0][0]-1,rg[0][1]).map(sn))}
+    return t.map((w,i)=>{
+      if(!inr(rg,i+1))return ref?'<span class="dim">'+w+'</span>':w;
+      if(ref&&!m[i+1-rg[0][0]])return '<span class="df">'+w+'</span>';
+      return '<span class="hl">'+w+'</span>'}).join(' ')};
+  let h=`<h2>${nm(k)}</h2><p class="ar sm">${tok(k,rs.map(r=>[r[0],r[1]]))}</p>
+<p class="key"><span class="hl">same words</span> <span class="df">different words</span> <span class="dim">outside the shared phrase</span></p>`;
+  const seen={};
+  rs.forEach(r=>{
+    if(seen[r[2]])return;seen[r[2]]=1;
+    const o=PH[r[2]],ks=Object.keys(o).filter(x=>x!=k).sort(srt),ph=V[k].t.slice(r[0]-1,r[1]),A=ph.map(sn),lim=all[r[2]]?ks.length:12;
+    h+=`<hr><p><b>${ph.join(' ')}</b><br>also appears in ${ks.length} other place${ks.length==1?'':'s'}:</p>`;
+    ks.slice(0,lim).forEach(x=>{h+=`<p><b>${nm(x)}</b>, page ${V[x]?V[x].p:'?'} <button data-p="${V[x]?V[x].p:1}">Go to page</button></p><p class="ar sm">${tok(x,o[x],A)}</p>`});
+    if(ks.length>lim)h+=`<p><button data-m="${r[2]}">Show all ${ks.length}</button></p>`;
+  });
+  md.innerHTML=h+'<div class="row"><button data-x>Close</button></div>';
+  if(!md.open)md.showModal();
+}
+md.onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.m){LP.all[b.dataset.m]=1;return showP(LP.k,LP.rs,LP.all)}
+  md.close();if(b.dataset.p)H.go(b.dataset.p)};
+/* ---------- tap a word: meanings and translations ---------- */
+let MN=null,LW=null;
+const MG={'2:181':3,'8:6':4,'13:37':8,'72:16':1};
+const mj=(k,i)=>MG[k]&&i>MG[k]?i-1:i;
+const wd=E('dialog');document.body.appendChild(wd);
+const loadMN=()=>MN?Promise.resolve(MN):fetch('data/meanings.json').then(r=>r.json()).then(j=>MN=j);
+const LG=()=>H.S.lg=Object.assign({wu:1,we:1,tu:1,te:1},H.S.lg||{});
+function showW(k,i){
+  if(!MN){
+    wd.innerHTML='<p>Loading meanings...</p>';if(!wd.open)wd.showModal();
+    return loadMN().then(()=>showW(k,i)).catch(()=>{wd.innerHTML='<p>Could not load the meanings. Connect to the internet once and try again.</p><div class="row"><button data-x>Close</button></div>'});
+  }
+  LW={k,i};const g=LG(),T=V[k].t,J=i?mj(k,i):0,n=MN.we[k].length,AK=Object.keys(V),ix=AK.indexOf(k);
+  const cells=[];for(let j=1;j<=n;j++)cells.push(T.filter((_,x)=>mj(k,x+1)==j).join(' '));
+  const mean=j=>(g.wu?`<small class="u">${esc(MN.wu[k][j-1]||'')}</small>`:'')+(g.we?`<small class="e">${esc(MN.we[k][j-1]||'')}</small>`:'');
+  let h=`<h2>${nm(k)}${J?', word '+J:''}</h2>`;
+  if(J)h+=`<div class="wc sel big"><div class="a">${cells[J-1]}</div>${mean(J)}</div>`;
+  h+=`<p class="key">Word by word</p><div class="wg">${cells.map((a,x)=>`<div class="wc${x+1==J?' sel':''}"><div class="a">${a}</div>${mean(x+1)}</div>`).join('')}</div>`;
+  if(g.tu)h+=`<hr><p class="key">Urdu translation (Fateh Muhammad Jalandhari)</p><p class="ur">${esc(MN.tu[k])}</p>`;
+  if(g.te)h+=`<hr><p class="key">English translation (M.A.S. Abdel Haleem)</p><p>${esc(MN.te[k])}</p>`;
+  const c=J?cov(k,i):[];
+  if(c.length){const s=new Set(c.flatMap(r=>Object.keys(PH[r[2]]).filter(y=>y!=k)));h+=`<hr><div class="row"><button data-sim>Mutashabihat: ${s.size} other place${s.size==1?'':'s'}</button></div>`}
+  h+=`<hr><div class="row"><button data-n="-1"${ix<1?' disabled':''}>Previous ayah</button><button data-n="1"${ix>=AK.length-1?' disabled':''}>Next ayah</button><button data-p="${V[k].p}">Go to page</button><button data-x>Close</button></div>`;
+  wd.innerHTML=h;if(!wd.open)wd.showModal();
+}
+wd.onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.dataset.n){const AK=Object.keys(V);return showW(AK[AK.indexOf(LW.k)+ +b.dataset.n],0)}
+  wd.close();
+  if(b.dataset.sim)showP(LW.k,cov(LW.k,LW.i));
+  if(b.dataset.p)H.go(b.dataset.p)};
 $('main').addEventListener('click',e=>{
-  const w=e.target.closest('.w');if(!w||w.classList.contains('hid')||!w.dataset.v)return;
-  if(H.S.sim!==false&&M[w.dataset.v]&&V)show(w.dataset.v);
+  const w=e.target.closest('.w');if(!w||w.classList.contains('hid')||!w.dataset.v||!V)return;
+  const k=w.dataset.v,i=+w.dataset.i;
+  if(H.S.mean!==false)return showW(k,i);
+  if(H.S.sim===false)return;const c=cov(k,i);if(c.length)showP(k,c);else if(M[k])show(k);
 });
 
 /* ---------- daily plan: Sabaq, Sabqi, Manzil ---------- */
@@ -171,12 +274,14 @@ $('#ap').onclick=()=>{
 
 /* ---------- header buttons ---------- */
 const bar=$('.ctl');
-[['plan','Plan'],['aub','Audio'],['sim','Similar ayahs'],['two','Two pages']].forEach(([id,t])=>{const b=E('button',t);b.id=id;bar.appendChild(b)});
+[['mean','Meanings'],['plan','Plan'],['aub','Audio'],['sim','Mutashabihat'],['two','Two pages']].forEach(([id,t])=>{const b=E('button',t);b.id=id;bar.appendChild(b)});
 $('#plan').onclick=()=>{planUI();pd.showModal()};
 $('#aub').onclick=()=>{const on=$('#aud').classList.toggle('on');$('#aub').setAttribute('aria-pressed',on);if(!on&&playing)stop();dispatchEvent(new Event('resize'))};
 $('#sim').setAttribute('aria-pressed',H.S.sim!==false);
 $('#sim').onclick=()=>{H.S.sim=H.S.sim===false;H.save();$('#sim').setAttribute('aria-pressed',H.S.sim!==false);hook()};
 
+$('#mean').setAttribute('aria-pressed',H.S.mean!==false);
+$('#mean').onclick=()=>{H.S.mean=H.S.mean===false;H.save();$('#mean').setAttribute('aria-pressed',H.S.mean!==false)};
 $('#two').setAttribute('aria-pressed',!!H.S.two);
 $('#two').onclick=()=>{H.S.two=!H.S.two;H.save();$('#two').setAttribute('aria-pressed',!!H.S.two);H.render()};
 /* ---------- margin marks: ruku and sajdah ---------- */
@@ -195,8 +300,8 @@ function marks(){
 }
 window.hook=()=>{
   if(!V)build();
-  theme();fillAud();mark();marks();
-  Q('.page .w[data-v]').forEach(w=>w.classList.toggle('m',H.S.sim!==false&&!!M[w.dataset.v]));
+  theme();fillAud();mark();marks();tag();
+  Q('.page .w[data-v]').forEach(w=>w.classList.toggle('m',H.S.sim!==false&&(!!M[w.dataset.v]||cov(w.dataset.v,+w.dataset.i).length>0)));
 };
 if(H.D)hook();
 })();
