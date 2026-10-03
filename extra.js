@@ -353,8 +353,8 @@ if(H.D)hook();
   const $=s=>document.querySelector(s), Q=s=>document.querySelectorAll(s), E=(t,h)=>{const e=document.createElement(t);e.innerHTML=h||'';return e};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const st=document.createElement('style');st.textContent=`
-    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.full-reader header,.full-reader footer{display:none}.full-reader main{padding:0;min-height:100vh;display:flex;align-items:center;justify-content:center}.full-reader .page{border:0;border-radius:0;box-shadow:none;max-width:100vw;min-height:100vh;padding:10px 12px;justify-content:center}.full-reader .page:not([hidden]){width:100%!important}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader #page2{display:none!important}.full-reader .page{font-size:1em}.full-reader dialog{z-index:10}.full-reader #load{min-height:100vh;display:flex;align-items:center}
-    @media(max-width:600px){.srhead{align-items:flex-start;flex-direction:column;gap:2px}.srtext{font-size:21px}.ayahbig{font-size:25px}.aytheme{right:auto;left:100%;margin:0 0 0 5px;max-width:70px}.full-reader .page{padding:4px 6px}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader main{overflow:hidden}.full-reader .w{cursor:default}}`;document.head.appendChild(st);
+    .sr{border-top:1px solid var(--line);padding:10px 0}.srhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.srhead span{color:var(--muted);font-size:.85rem}.srtext{font-size:25px;line-height:1.9;margin-top:5px}.srtrans{margin-top:5px;line-height:1.7}.ayahbig{font-size:32px;line-height:2.1}.w.ayahhl{background:var(--tint);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:.18em}.w.abm{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}.aytheme{position:absolute;right:100%;margin-right:6px;color:var(--accent);font:12px/1.1 system-ui,sans-serif;white-space:nowrap;max-width:90px;overflow:hidden;text-overflow:ellipsis}.full-reader header,.full-reader footer{display:none}.full-reader main{padding:0;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}.full-reader .page{border:0;border-radius:0;box-shadow:none;min-height:0;height:auto;padding:18px 28px;justify-content:center;width:auto!important;max-width:calc(100vw - 48px);background:var(--paper)}.full-reader{overflow:hidden}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader .hd,.full-reader .ft{display:none}.full-reader .page{font-size:1em}.full-reader dialog{z-index:20}.full-reader #load{min-height:100vh;display:flex;align-items:center}.full-reader .full-exit{display:flex}.full-exit{display:none;position:fixed;z-index:100;top:14px;right:14px;width:44px;height:44px;min-height:44px;padding:0;align-items:center;justify-content:center;border-radius:50%;font-size:28px;line-height:1;background:var(--paper);border:1px solid var(--line);box-shadow:0 3px 14px rgba(0,0,0,.18)}.full-exit span{display:block;transform:translateY(-1px)}
+    @media(max-width:600px){.srhead{align-items:flex-start;flex-direction:column;gap:2px}.srtext{font-size:21px}.ayahbig{font-size:25px}.aytheme{right:auto;left:100%;margin:0 0 0 5px;max-width:70px}.full-reader .page{padding:10px 7px;max-width:calc(100vw - 12px)}.full-reader .line{height:calc(var(--fs,40px)*1.72)}.full-reader main{overflow:hidden}.full-reader .w{cursor:default}.full-exit{top:8px;right:8px;width:40px;height:40px;font-size:25px}}`;document.head.appendChild(st);
 
   const norm=s=>String(s??'').normalize('NFD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'').replace(/[ٱأإآ]/g,'ا').replace(/ى/g,'ي').replace(/ئ/g,'ي').replace(/ؤ/g,'و').replace(/ة/g,'ه').replace(/[\s\u200f\u200e]+/g,' ').trim().toLowerCase();
   let idx=null, searchMode='all', searchQ='';
@@ -438,8 +438,22 @@ if(H.D)hook();
     const b=document.createElement('button');b.id='qsearch';b.textContent='Search';b.onclick=()=>{ensureSearchDialog();$('#sq').value='';$('#sstatus').textContent='';$('#sresults').innerHTML='';$('#searchDlg').showModal();setTimeout(()=>$('#sq').focus(),0)};bar.appendChild(b);
     const f=document.createElement('button');f.id='full';f.textContent='Full page';f.setAttribute('aria-pressed',!!S().full);f.onclick=toggleFull;bar.appendChild(f);
   };
-  const toggleFull=()=>{S().full=!S().full;H.save();document.body.classList.toggle('full-reader',!!S().full);$('#full').setAttribute('aria-pressed',!!S().full);if(H.render)H.render()};
-  const fullOnLoad=()=>{if(S().full){document.body.classList.add('full-reader');const b=$('#full');if(b)b.setAttribute('aria-pressed','true')}};
+  const ensureFullExit=()=>{
+    if($('#fullExit'))return;
+    const b=document.createElement('button');b.id='fullExit';b.className='full-exit';b.type='button';b.setAttribute('aria-label','Exit full page');b.title='Exit full page';b.innerHTML='<span aria-hidden="true">×</span>';
+    b.onclick=()=>toggleFull(false);
+    document.body.appendChild(b);
+  };
+  const toggleFull=on=>{
+    S().full=on===undefined?!S().full:!!on;H.save();
+    document.body.classList.toggle('full-reader',!!S().full);
+    const b=$('#full');if(b)b.setAttribute('aria-pressed',!!S().full);
+    ensureFullExit();
+    const x=$('#fullExit');if(x)x.style.display=S().full?'flex':'none';
+    if(H.render)H.render();
+    if(S().full)window.scrollTo(0,0);
+  };
+  const fullOnLoad=()=>{ensureFullExit();if(S().full){document.body.classList.add('full-reader');const b=$('#full');if(b)b.setAttribute('aria-pressed','true');$('#fullExit').style.display='flex'}else{$('#fullExit').style.display='none'}};
   // Patch the existing word/ayah click handler by capturing clicks before it reaches the older handler.
   document.addEventListener('click',e=>{const w=e.target.closest('.w[data-v]');if(!w)return;if(w.textContent.includes('\u06dd')){e.stopImmediatePropagation();showAyah(w.dataset.v)}},true);
   // Add a keyboard shortcut: / opens search, F toggles full page when not typing.
