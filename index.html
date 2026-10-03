@@ -31,15 +31,15 @@ main{padding:16px 18px 10px;display:flex;direction:rtl;justify-content:center;ga
 .page-meta{height:42px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;direction:ltr;color:var(--ink);font-family:Khatt,serif;font-size:clamp(18px,2.2vw,27px);line-height:1;white-space:nowrap;padding:2px 4px 0}.page-meta .surah-name{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;font-size:.78em;letter-spacing:.01em}
 .page-meta .surah-name{justify-self:start;direction:ltr}.page-meta .page-no{justify-self:center;direction:rtl;font-size:1.05em}.page-meta .juz-name{justify-self:end;direction:rtl;font-size:.78em;color:var(--muted)}
 .page-frame{padding:8px 14px 10px;background:var(--paper);border:3px double var(--accent);border-radius:2px;display:flex;flex-direction:column;overflow:visible}
-.line{position:relative;display:flex;justify-content:space-between;align-items:center;direction:rtl;white-space:nowrap;font-size:var(--fs,40px);height:calc(var(--fs,40px)*1.7);border-bottom:1px solid var(--line)}
-.line:last-child{border-bottom:0}.line.c{justify-content:center;gap:.22em}.line.c .w{margin-left:0}.w{flex:none;font-family:Khatt,serif;line-height:1.7;cursor:default}.line:not(.c) .w{margin-left:0}.w.hid:not(.r){color:transparent;background:var(--mask);border-radius:.18em;cursor:pointer}
+.line{position:relative;display:block;direction:rtl;text-align:justify;text-align-last:justify;white-space:nowrap;font-size:var(--fs,40px);line-height:1.7;height:calc(var(--fs,40px)*1.7);border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}.line.c{text-align:center;text-align-last:center}.line.c .w{margin-left:0}.w{display:inline-block;font-family:Khatt,serif;line-height:1.7;cursor:default}.line:not(.c) .w{margin-left:0}.line:not(.c)::after{content:'';display:inline-block;width:100%;height:0}.line.c::after{content:none}.w.hid:not(.r){color:transparent;background:var(--mask);border-radius:.18em;cursor:pointer}
 .sur{direction:ltr;justify-content:center;gap:.8em;font-size:calc(var(--fs,40px)*.5);background:var(--tint);border:1px solid var(--accent);border-radius:6px;color:var(--accent)}.sur b{font-weight:650}
 .page-footer{min-height:28px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:Khatt,serif;font-size:clamp(14px,1.7vw,20px);direction:rtl}.page-footer .manzil{margin-left:auto}.page-footer .juz{margin-right:auto}
 footer{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}footer button{min-width:110px}#mid{text-align:center;line-height:1.2}#sn{display:block;color:var(--muted);font-size:.8rem}
 dialog{max-width:34em;width:calc(100% - 24px);border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);padding:18px}dialog::backdrop{background:rgba(0,0,0,.45)}dialog h2{font-size:1.05rem;margin:0 0 8px}dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
 #search{width:min(220px,48vw)}#searchMode{min-width:150px}#searchResults{max-height:65vh;overflow:auto}.sr{display:block;width:100%;text-align:right;margin:6px 0;padding:10px;min-height:auto;white-space:normal}.sr .ar{display:block;font:24px/1.9 Khatt,serif;direction:rtl}.sr .tr{display:block;margin-top:6px;line-height:1.55;white-space:normal}.sr .tr.ur{direction:rtl;text-align:right}.sr .tr.en{direction:ltr;text-align:left}.sr small{display:block;color:var(--muted);text-align:left;margin-top:6px}
-body.reader{background:var(--paper);overflow:hidden}#readerExit{display:none}body.reader #readerExit{display:block;position:fixed;z-index:20;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:34px;height:34px;min-height:34px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.12);color:var(--ink);font-size:24px;line-height:32px;opacity:.55}body.reader #readerExit:hover,body.reader #readerExit:focus{opacity:1}body.reader header,body.reader footer{display:none}body.reader main{width:100%;height:100dvh;min-height:100dvh;padding:12px 2.5vw;display:flex;direction:rtl;align-items:center;justify-content:center;gap:1.5vw;overflow:hidden;touch-action:pan-y}body.reader .page{height:auto;max-height:calc(100dvh - 24px);padding:0 32px 4px;border-radius:0;box-shadow:none;overflow:visible}body.reader .page-frame{flex:0 0 auto;min-height:0;padding:4px 10px 6px;border-width:2px;border-radius:0}body.reader .page-meta{height:clamp(30px,6dvh,50px);flex:0 0 auto;padding-top:0}body.reader .page-footer{height:clamp(20px,4dvh,28px);flex:0 0 auto}
-@media(max-width:700px){header{position:relative}.ctl{gap:5px}button,select,input{max-width:100%;font-size:.9rem}.page{padding:0 30px 6px;max-width:100%}.page-meta{height:34px;font-size:20px}.page-meta .surah-name{font-size:.72em}.page-frame{padding:6px 7px 8px}.page-footer{min-height:22px;font-size:15px}main{padding:6px 8px;min-height:calc(100dvh - 120px);overflow-x:hidden;touch-action:pan-y}.page{max-width:100%}footer button{min-width:90px}body.reader main{width:100%;height:100dvh;padding:10px 3vw;gap:0;overflow:hidden}body.reader .page{width:100%;max-width:100%;padding:0 28px 2px}body.reader .page-frame{padding:3px 5px 4px;border-width:2px}body.reader .page-meta{height:34px;font-size:20px}body.reader .page-footer{height:22px;font-size:14px}}
+body.reader{background:var(--paper);overflow:hidden}#readerExit{display:none}body.reader #readerExit{display:block;position:fixed;z-index:20;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:34px;height:34px;min-height:34px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.12);color:var(--ink);font-size:24px;line-height:32px;opacity:.55}body.reader #readerExit:hover,body.reader #readerExit:focus{opacity:1}body.reader header,body.reader footer{display:none}body.reader main{width:100%;height:100dvh;min-height:100dvh;padding:10px 1.25vw;display:flex;direction:rtl;flex-direction:row;align-items:center;justify-content:center;gap:1.25vw;overflow:hidden;overscroll-behavior-x:none;touch-action:pan-y}body.reader .page{height:auto;max-height:none;padding:0 20px 4px;border-radius:0;box-shadow:none;overflow:visible}body.reader .page-frame{flex:0 0 auto;width:100%;min-height:0;padding:4px 8px 6px;border-width:2px;border-radius:0}body.reader .page-meta{height:clamp(30px,6dvh,50px);flex:0 0 auto;padding-top:0}body.reader .page-footer{height:clamp(20px,4dvh,28px);flex:0 0 auto}
+@media(max-width:700px){header{position:relative}.ctl{gap:5px}button,select,input{max-width:100%;font-size:.9rem}.page{padding:0 30px 6px;max-width:100%}.page-meta{height:34px;font-size:20px}.page-meta .surah-name{font-size:.72em}.page-frame{padding:6px 7px 8px}.page-footer{min-height:22px;font-size:15px}main{padding:6px 8px;min-height:calc(100dvh - 120px);overflow-x:hidden;touch-action:pan-y}.page{max-width:100%}footer button{min-width:90px}body.reader main{width:100%;height:100dvh;padding:8px 1.5vw;gap:0;overflow:hidden;overscroll-behavior-x:none}body.reader .page{width:100%;max-width:100%;padding:0 10px 2px}body.reader .page-frame{padding:3px 5px 4px;border-width:2px}body.reader .page-meta{height:34px;font-size:20px}body.reader .page-footer{height:22px;font-size:14px}}
 @media(min-width:701px){body.reader main .page{max-width:none}}
 </style>
 </head>
@@ -149,33 +149,40 @@ function fit(){
   const P=el2.hidden?[el]:[el,el2],n=P.length;
   const headerH=reader?0:document.querySelector('header').offsetHeight;
   const footerH=reader?0:document.querySelector('footer').offsetHeight;
-  const gap=n>1?(reader?Math.round(innerWidth*.015):18):0;
-  const outerX=reader?(phone?innerWidth*.03:innerWidth*.025):18;
-  const shellPad=reader?(phone?56:64):68; // room for outer margin signs on both sides
-  const availH=Math.max(180,innerHeight-headerH-footerH-(reader?20:45));
-  const availW=Math.max(160,(innerWidth-(outerX*2)-gap)/n);
-  const pageW=Math.max(160,availW);
-  const frameW=Math.max(120,pageW-shellPad);
-  const metaH=reader?Math.min(50,Math.max(30,innerHeight*.06)):(phone?34:42);
-  const footH=reader?Math.min(28,Math.max(20,innerHeight*.04)):(phone?22:28);
-  // Fit the longest line into the full Mushaf frame, but keep the frame wide.
+  const gap=n>1?(reader?Math.max(8,Math.round(innerWidth*.012)):18):0;
+  const outerX=reader?(phone?Math.max(8,innerWidth*.015):Math.max(12,innerWidth*.018)):18;
+  const signMargin=reader?(phone?10:18):30;
+  const availH=Math.max(180,innerHeight-headerH-footerH-(reader?12:45));
+  const availW=Math.max(180,(innerWidth-(outerX*2)-gap)/n);
+  const pageW=Math.max(180,availW);
+  const frameW=Math.max(140,pageW-(signMargin*2));
+  const metaH=reader?Math.min(46,Math.max(28,innerHeight*.055)):(phone?34:42);
+  const footH=reader?Math.min(26,Math.max(18,innerHeight*.035)):(phone?22:28);
+
+  // Measure the actual word run at the reference size. The line itself is
+  // justified, so we must NOT invent a fixed gap between words.
   let maxUnits=1;
   P.forEach(p=>{
     p.style.setProperty('--fs','40px');
     p.style.width=pageW+'px';
     p.style.maxWidth=pageW+'px';
     p.querySelectorAll('.line:not(.sur):not(.c)').forEach(d=>{
-      let w=0;const ws=d.querySelectorAll('.w');
-      ws.forEach(c=>w+=c.offsetWidth);
-      w+=Math.max(0,ws.length-1)*17;
+      let w=0;
+      d.querySelectorAll('.w').forEach(c=>{w+=c.getBoundingClientRect().width});
       maxUnits=Math.max(maxUnits,w);
     });
   });
-  const frameInner=frameW-(reader?20:28);
+
+  const frameInner=Math.max(100,frameW-16);
   const verticalLines=16*LH;
-  const fsByHeight=(availH-metaH-footH-(reader?18:36))/verticalLines;
+  const fsByHeight=(availH-metaH-footH-(reader?12:30))/verticalLines;
   const fsByWidth=(frameInner*40)/maxUnits;
-  const fs=Math.max(10,Math.min(40,fsByHeight,fsByWidth));
+  // On a phone, width is the limiting dimension for readability; on desktop
+  // keep the complete 16-line page inside the reader viewport.
+  const fs=reader&&phone
+    ?Math.max(14,Math.min(40,fsByWidth,fsByHeight*1.12))
+    :Math.max(14,Math.min(40,fsByWidth,fsByHeight));
+
   P.forEach(p=>{
     p.style.setProperty('--fs',fs+'px');
     p.style.width=pageW+'px';
@@ -219,7 +226,7 @@ $('#pv').onclick=()=>mv(-1);
 $('#mem').onclick=()=>{if(S.done[page])delete S.done[page];else S.done[page]=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);save();render()};
 $('main').addEventListener('click',e=>{const w=e.target.closest('.w.hid');if(w)w.classList.toggle('r')});
 addEventListener('keydown',e=>{
-  if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName)||!D)return;
+  if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)||e.target.isContentEditable||!D)return;
   if(e.key==='ArrowLeft'){e.preventDefault();mv(1);}
   else if(e.key==='ArrowRight'){e.preventDefault();mv(-1);}
 });
@@ -229,7 +236,7 @@ $('main').addEventListener('touchend',e=>{
   if(x0===null)return;
   const dx=e.changedTouches[0].clientX-x0;x0=null;
   if(Math.abs(dx)>70){e.preventDefault();mv(dx<0?1:-1);}
-},{passive:true});
+},{passive:false});
 addEventListener('resize',()=>D&&fit());
 
 $('#menu').onclick=()=>{$('#msg').textContent='';$('#dlg').showModal()};

@@ -34,6 +34,7 @@ dialog .row button[data-p]{min-height:34px}
 input[type=checkbox]{min-height:auto;width:20px;height:20px}
 .hl{background:var(--tint);color:var(--accent);border-radius:.2em}
 dialog{max-height:88vh;overflow:auto}
+.theme-item{display:block;width:100%;text-align:left;margin:7px 0;padding:10px;min-height:auto;white-space:normal}.theme-item b{display:block;color:var(--ink);font-weight:650}.theme-item span,.theme-item small{display:block;margin-top:4px;color:var(--muted);line-height:1.4}.theme-item small{font-size:.78rem}.theme-item:hover{border-color:var(--accent);background:var(--tint)}
 .ar{font:28px/1.9 Khatt,serif;direction:rtl;color:var(--ink)!important}
 `));
 
@@ -271,13 +272,74 @@ $('#ap').onclick=()=>{
   q=ks.slice(f,t+1);qi=ri=rr=0;playing=true;$('#ap').textContent='Stop';next();
 };
 
+/* ---------- themes and matching ayahs data ---------- */
+let THEMES=[], SIM={};
+const td=E('dialog');
+td.id='themeDlg';
+td.innerHTML=`<h2>Quran themes</h2>
+<p>Browse the thematic ranges in the uploaded Ayah Themes database, or search by theme or keyword.</p>
+<div class="row"><input id="themeSearch" type="search" placeholder="Search themes (English)" style="flex:1;min-width:220px"><button id="themeSearchBtn">Search</button></div>
+<p id="themeStatus" role="status"></p><div id="themeResults"></div>
+<div class="row"><button data-close-theme>Close</button></div>`;
+document.body.appendChild(td);
+const sd=E('dialog');
+sd.id='similarDlg';
+sd.innerHTML=`<h2>Similar ayahs</h2><p id="similarStatus"></p><div id="similarResults"></div><div class="row"><button data-close-sim>Close</button></div>`;
+document.body.appendChild(sd);
+function loadExploreData(){
+  return Promise.all([
+    THEMES.length?Promise.resolve(THEMES):fetch('data/themes.json').then(r=>r.json()).then(j=>(THEMES=j)),
+    Object.keys(SIM).length?Promise.resolve(SIM):fetch('data/similar-ayahs.json').then(r=>r.json()).then(j=>(SIM=j))
+  ]);
+}
+function themeItem(t){
+  const sn=H.D.surahs[t.surah-1]||('Surah '+t.surah);
+  const range=`${sn}, ayah ${t.from}${t.to!==t.from?'–'+t.to:''}`;
+  const pages=t.endPage&&t.endPage!==t.page?`Pages ${t.page}–${t.endPage}`:`Page ${t.page||'?'}`;
+  return `<button class="theme-item" data-theme-page="${t.page||1}"><b>${esc(t.theme)}</b><span>${esc(range)} · ${pages}</span>${t.keywords?`<small>Keyword: ${esc(t.keywords)}</small>`:''}</button>`;
+}
+function renderThemes(q=''){
+  const out=$('#themeResults'),status=$('#themeStatus');out.innerHTML='';
+  const n=normSearch(q);
+  let arr=THEMES.filter(t=>!n||normSearch(t.theme).includes(n)||normSearch(t.keywords).includes(n));
+  if(!n&&H.page){
+    const current=arr.filter(t=>t.page&&t.endPage&&H.page>=t.page&&H.page<=t.endPage);
+    const rest=arr.filter(t=>!current.includes(t));
+    status.textContent=current.length?`${current.length} theme${current.length===1?'':'s'} covering page ${H.page}`:'No theme range starts on this page; showing the theme index.';
+    arr=current.concat(rest);
+  }else status.textContent=`${arr.length} matching theme${arr.length===1?'':'s'}`;
+  arr.slice(0,80).forEach(t=>{out.insertAdjacentHTML('beforeend',themeItem(t))});
+  if(arr.length>80)out.insertAdjacentHTML('beforeend',`<p>Showing first 80 results. Refine your search for more.</p>`);
+}
+function showThemes(){
+  loadExploreData().then(()=>{renderThemes($('#themeSearch').value||'');if(!td.open)td.showModal()}).catch(()=>{ $('#themeStatus').textContent='Could not load the theme data.';if(!td.open)td.showModal()});
+}
+td.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.closeTheme!==undefined)return td.close();if(b.dataset.themePage){td.close();H.go(+b.dataset.themePage)}};
+$('#themeSearchBtn').onclick=()=>renderThemes($('#themeSearch').value);
+$('#themeSearch').addEventListener('keydown',e=>{if(e.key==='Enter')renderThemes(e.target.value)});
+function showSimilar(){
+  const keys=pk(),out=$('#similarResults'),status=$('#similarStatus');out.innerHTML='';
+  loadExploreData().then(()=>{
+    let rows=[];keys.forEach(k=>(SIM[k]||[]).slice(0,8).forEach(x=>rows.push([k,x])));
+    rows.sort((a,b)=>b[1].score-a[1].score||b[1].coverage-a[1].coverage);
+    status.textContent=rows.length?`Top matches for ayahs on page ${H.page}. Matches are ranked by the supplied score.`:'No matching ayahs were found for this page.';
+    rows.slice(0,60).forEach(([src,x])=>{
+      const b=E('button',`<b>${esc(nm(src))}</b> ↔ <b>${esc(nm(x.ayah))}</b><span>Score ${x.score} · ${x.coverage}% coverage · ${x.words} matching words · page ${V[x.ayah]?V[x.ayah].p:'?'}</span>`);
+      b.className='theme-item';b.dataset.simPage=V[x.ayah]?V[x.ayah].p:1;b.dataset.simAyah=x.ayah;out.appendChild(b);
+    });
+    if(!sd.open)sd.showModal();
+  }).catch(()=>{status.textContent='Could not load the matching-ayah data.';if(!sd.open)sd.showModal()});
+}
+sd.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.closeSim!==undefined)return sd.close();if(b.dataset.simPage){sd.close();H.go(+b.dataset.simPage)}};
 /* ---------- header buttons ---------- */
 const bar=$('.ctl');
-[['mean','Meanings'],['plan','Plan'],['aub','Audio'],['sim','Mutashabihat'],['two','Two pages']].forEach(([id,t])=>{const b=E('button',t);b.id=id;bar.appendChild(b)});
+[['mean','Meanings'],['plan','Plan'],['aub','Audio'],['sim','Mutashabihat'],['themes','Themes'],['similar','Similar ayahs'],['two','Two pages']].forEach(([id,t])=>{const b=E('button',t);b.id=id;bar.appendChild(b)});
 $('#plan').onclick=()=>{planUI();pd.showModal()};
 $('#aub').onclick=()=>{const on=$('#aud').classList.toggle('on');$('#aub').setAttribute('aria-pressed',on);if(!on&&playing)stop();dispatchEvent(new Event('resize'))};
 $('#sim').setAttribute('aria-pressed',H.S.sim!==false);
 $('#sim').onclick=()=>{H.S.sim=H.S.sim===false;H.save();$('#sim').setAttribute('aria-pressed',H.S.sim!==false);hook()};
+$('#themes').onclick=showThemes;
+$('#similar').onclick=showSimilar;
 
 $('#mean').setAttribute('aria-pressed',H.S.mean!==false);
 $('#mean').onclick=()=>{H.S.mean=H.S.mean===false;H.save();$('#mean').setAttribute('aria-pressed',H.S.mean!==false)};
