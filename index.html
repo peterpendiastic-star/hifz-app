@@ -93,6 +93,9 @@ function go(p){page=Math.max(1,Math.min(N,parseInt(p)||1));S.last=page;save();re
 function draw(el,pn){
   el.innerHTML='';
   const L=D.pages[pn-1];
+  // Track ayah starts across the whole page. An ayah can continue onto
+  // another Mushaf line, so this must NOT reset for every line.
+  let ayahStart=true;
   L.forEach(l=>{
     const d=document.createElement('div');
     if(l[0]==1){
@@ -103,7 +106,6 @@ function draw(el,pn){
     }else{
       d.className='line'+(l[1]?' c':'')+(l[0]==2?' bsm':'');
       let [vs,va]=(l[3]||'0:0').split(':').map(Number);
-      let ayahStart=true;
       (l[0]==2?D.basmallah:l[2]).split(' ').forEach(w=>{
         const s=document.createElement('span');s.className='w';s.textContent=w;
         if(l[0]==0){
