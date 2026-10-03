@@ -8,15 +8,15 @@ let P={},PH={},V=null,M={},q=[],qi=0,ri=0,rr=0,playing=false;
 const A=new Audio();
 
 document.head.appendChild(E('style',`
-[data-dir=ltr] footer{flex-direction:row-reverse}
 .w.m{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}
 .w.hid:not(.r).m{text-decoration:none}
 .w.pl{background:var(--tint);border-radius:.18em}
 #aud{display:none}#aud.on{display:flex}
 dialog hr{border:0;border-top:1px solid var(--line)}
 dialog .row button[data-p]{min-height:34px}
-.mk{position:absolute;right:100%;margin-right:7px;direction:rtl;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.38)/1.1 Khatt,serif;color:var(--accent);z-index:3;pointer-events:none}.mk:not(.r){min-width:1.6em}
-.mk.r{right:auto;left:100%;margin:0 0 0 7px;text-align:left;font-size:calc(var(--fs,40px)*.38);line-height:1.1}
+.mk{position:absolute;direction:rtl;white-space:nowrap;font:calc(var(--fs,40px)*.38)/1.1 Khatt,serif;color:var(--accent);z-index:3;pointer-events:none;min-width:1.6em}
+.mk.out-left{right:100%;margin-right:7px;text-align:right}
+.mk.out-right{left:100%;margin-left:7px;text-align:left}
 .g{font:26px Khatt,serif;display:inline-block;min-width:1.6em;text-align:center;color:var(--ink)}
 .df{color:#d9534f;font-weight:700}
 .dim{opacity:.5}
@@ -298,14 +298,24 @@ function setRub(j){
 try{fetch('data/rub.json').then(r=>r.ok?r.json():0).then(j=>j&&setRub(j)).catch(()=>{})}catch(x){}
 function marks(){
   Q('.mk').forEach(m=>m.remove());
-  Q('.page .w[data-i="1"]').forEach(w=>{const t=RB[w.dataset.v];if(!t)return;const m=E('span',t);m.className='mk r';w.parentNode.appendChild(m)});
-  Q('.page .w[data-v]').forEach(w=>{
-    if(w.textContent.charCodeAt(0)!=0x6dd)return;
-    const k=w.dataset.v,t=[R[k]?'\u0639'+R[k]:'',SAJ.has(k)?'\u06E9':''].filter(Boolean).join('<br>');
-    if(!t)return;
-    const m=E('span',t);m.className='mk';w.parentNode.appendChild(m);
+  Q('.page').forEach(pe=>{
+    const pn=pe===H.el?H.page:H.page+1;
+    const side=(pn%2===1)?'right':'left';
+    const cls=side==='right'?'out-right':'out-left';
+    pe.querySelectorAll('.w[data-i="1"]').forEach(w=>{
+      const t=RB[w.dataset.v];if(!t)return;
+      const m=E('span',t);m.className='mk '+cls;w.parentNode.appendChild(m);
+    });
+    pe.querySelectorAll('.w[data-v]').forEach(w=>{
+      if(w.textContent.charCodeAt(0)!=0x6dd)return;
+      const k=w.dataset.v;
+      const t=[R[k]?'\u0639'+R[k]:'',SAJ.has(k)?'\u06E9':''].filter(Boolean).join('<br>');
+      if(!t)return;
+      const m=E('span',t);m.className='mk '+cls;w.parentNode.appendChild(m);
+    });
   });
 }
+
 window.hook=()=>{
   if(!V)build();
   theme();fillAud();mark();tag();marks();
