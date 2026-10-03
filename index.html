@@ -25,13 +25,14 @@ button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);co
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 #pg{width:72px}
 label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
-main{padding:12px 10px 8px;display:flex;justify-content:center;gap:10px;align-items:flex-start}
+main{padding:12px 10px 8px;display:flex;justify-content:center;gap:10px;align-items:flex-start;min-height:calc(100vh - 150px)}
+main.side-left{justify-content:flex-start}main.side-right{justify-content:flex-end}
 .page[hidden]{display:none}
 #load{color:var(--muted);padding:40px 10px;text-align:center;max-width:32em}
-.page{padding:12px 32px;background:var(--paper);border:3px double var(--accent);border-radius:4px;display:flex;flex-direction:column}
+.page{padding:12px 32px;background:var(--paper);border:3px double var(--accent);border-radius:4px;display:flex;flex-direction:column;box-shadow:0 3px 12px #00000012}
 .page.short{justify-content:center}
 .page.done{border-style:solid}
-.line{position:relative;display:flex;justify-content:space-between;align-items:center;direction:rtl;white-space:nowrap;font-size:var(--fs,40px);height:calc(var(--fs,40px)*1.7)}
+.line{position:relative;display:flex;justify-content:space-between;align-items:center;direction:rtl;white-space:nowrap;font-size:var(--fs,40px);height:calc(var(--fs,40px)*1.7);border-bottom:1px solid var(--line)}
 .line.c{justify-content:center;gap:.22em}
 .w{flex:none;font-family:Khatt,serif;line-height:1.7;cursor:default}
 .w.hid:not(.r){color:transparent;background:var(--mask);border-radius:.18em;cursor:pointer}
@@ -46,6 +47,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog h2{font-size:1.05rem;margin:0 0 8px}
 dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
+#search{width:min(220px,48vw)}#searchMode{min-width:150px}#searchResults{max-height:65vh;overflow:auto}.sr{display:block;width:100%;text-align:right;margin:6px 0;padding:10px;min-height:auto;white-space:normal}.sr .ar{display:block;font:24px/1.9 Khatt,serif;direction:rtl}.sr .tr{display:block;margin-top:6px;line-height:1.55;white-space:normal}.sr .tr.ur{direction:rtl;text-align:right}.sr .tr.en{direction:ltr;text-align:left}.sr small{display:block;color:var(--muted);text-align:left;margin-top:6px}
+:fullscreen body{height:100vh;overflow:auto}:fullscreen header,:fullscreen footer{display:none}:fullscreen main{min-height:100vh;padding:12px 8px;align-items:center}:fullscreen .page{max-height:calc(100vh - 24px)}
+@media(max-width:600px){header{position:relative}.ctl{gap:5px}button,select,input{max-width:100%;font-size:.9rem}.page{padding:8px 12px}main{padding:6px 3px;min-height:calc(100vh - 120px)}footer button{min-width:90px}}
 </style>
 </head>
 <body>
@@ -53,6 +57,7 @@ dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}
   <div class="top"><h1>Hifz</h1><span id="prog"></span><button id="menu" aria-label="About and backup">More</button></div>
   <div class="ctl">
     <label>Page <input id="pg" type="number" min="1" max="548" inputmode="numeric"></label>
+    <select id="searchMode" aria-label="Search type"><option value="quran">Quran Arabic</option><option value="urdu">Urdu translation</option><option value="english">English translation</option><option value="all">All text</option></select><input id="search" type="search" placeholder="Search Quran Arabic" aria-label="Search Quran text" dir="rtl"><button id="searchBtn">Search</button>
     <select id="sur" aria-label="Go to surah"><option value="">Surah</option></select>
     <select id="juz" aria-label="Go to juz"><option value="">Juz</option></select>
     <select id="hid" aria-label="Hide text for testing">
@@ -60,6 +65,8 @@ dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}
       <option value="low">Hide lower half</option><option value="up">Hide upper half</option>
     </select>
     <button id="mem" aria-pressed="false">Mark memorized</button>
+    <label id="sideWrap">Single page side <select id="side"><option value="right">Right</option><option value="left">Left</option></select></label>
+    <button id="full">Full page</button>
   </div>
 </header>
 <main><div id="load">Loading the Mushaf...</div><div id="page2" class="page" hidden></div><div id="page" class="page" hidden></div></main>
@@ -68,6 +75,7 @@ dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}
   <div id="mid"><span id="ind"></span><small id="sn"></small></div>
   <button id="pv">Previous page &#8250;</button>
 </footer>
+<dialog id="searchDlg"><h2>Search results</h2><p id="searchStatus" role="status"></p><div id="searchResults"></div><div class="row"><button id="searchClose">Close</button></div></dialog>
 <dialog id="dlg">
   <h2>Backup your progress</h2>
   <p>Your progress is saved in this browser only. Download a backup to move it to another device or keep it safe.</p>
@@ -84,7 +92,7 @@ dialog p{margin:.5em 0;color:var(--muted);font-size:.9rem}
 <script>
 (()=>{
 const $=s=>document.querySelector(s),N=548,LH=1.7,el=$('#page'),el2=$('#page2');
-let D,page=1,S={done:{},last:1};
+let D,page=1,S={done:{},last:1},ME={tu:{},te:{}},AY={};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem('hifz')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('hifz',JSON.stringify(S))}catch(e){}};
 
@@ -115,12 +123,13 @@ function draw(el,pn){
   el.classList.toggle('done',!!S.done[pn]);
 }
 function render(){
-  const two=!!S.two&&page>1&&page<N;
-  if(two&&page%2)page--;
+  const two=!!S.two;
+  if(two){page=Math.max(1,Math.min(N-1,page%2===0?page-1:page));}
   draw(el,page);el2.hidden=!two;if(two)draw(el2,page+1);
+  $('main').classList.toggle('side-left',!two&&S.side==='left');$('main').classList.toggle('side-right',!two&&S.side!=='left');$('#sideWrap').hidden=two;
   applyHide();fit();ui();window.hook&&hook();
 }
-const mv=d=>go(page+(S.two?(d>0?(page==1?1:2):(page<=2?-1:-2)):d));
+const mv=d=>go(page+(S.two?(d>0?2:-2):d));
 
 function applyHide(){
   const m=$('#hid').value;[el,el2].forEach(pg=>{const ls=[...pg.querySelectorAll('.line:not(.sur)')],n=ls.length;
@@ -151,13 +160,16 @@ function ui(){
   $('#mem').setAttribute('aria-pressed',done);
   $('#ind').textContent='Page '+page+' of '+N;
   $('#sn').textContent=D.surahs[si];
-  $('#pv').disabled=page<=1;$('#nx').disabled=page>=N;
+  $('#pv').disabled=page<=1;$('#nx').disabled=page>=(S.two?N-1:N);
 }
 
 $('#pg').onchange=e=>go(e.target.value);
 $('#sur').onchange=e=>{if(e.target.value)go(D.surahPage[e.target.value-1]);e.target.value=''};
 $('#juz').onchange=e=>{if(e.target.value)go(D.juzPage[e.target.value-1]);e.target.value=''};
 $('#hid').onchange=applyHide;
+$('#side').value=S.side||'right';$('#side').onchange=e=>{S.side=e.target.value;save();render()};
+$('#full').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){alert('Full page mode is not available in this browser.')}};
+document.addEventListener('fullscreenchange',()=>{$('#full').textContent=document.fullscreenElement?'Exit full page':'Full page';dispatchEvent(new Event('resize'))});
 $('#nx').onclick=()=>mv(1);
 $('#pv').onclick=()=>mv(-1);
 $('#mem').onclick=()=>{if(S.done[page])delete S.done[page];else S.done[page]=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);save();render()};
@@ -177,6 +189,46 @@ addEventListener('resize',()=>D&&fit());
 
 $('#menu').onclick=()=>{$('#msg').textContent='';$('#dlg').showModal()};
 $('#close').onclick=()=>$('#dlg').close();
+$('#searchClose').onclick=()=>$('#searchDlg').close();
+function normSearch(t){return String(t||'').normalize('NFD').replace(/[\u064B-\u065F\u0670\u0640\u06D6-\u06ED]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ک/g,'ك').replace(/ہ|ھ/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/\s+/g,' ').trim()}
+function buildSearchIndex(){
+  AY={};
+  if(!D)return;
+  D.pages.forEach((L,i)=>L.forEach(l=>{
+    if(l[0]!==0)return;
+    let [sur,ayah]=String(l[3]||'1:1').split(':').map(Number);
+    const parts=String(l[2]||'').split('\u06dd');
+    parts.forEach((part,j)=>{
+      const k=sur+':'+ayah;
+      if(part.trim())(AY[k]||(AY[k]={page:i+1,text:''})).text+=' '+part;
+      if(j<parts.length-1)ayah++;
+    });
+  }));
+}
+function searchQ(){
+  const raw=$('#search').value.trim(),q=normSearch(raw),mode=$('#searchMode').value,dlg=$('#searchDlg'),out=$('#searchResults');
+  out.innerHTML='';
+  if(!q){$('#searchStatus').textContent='Type something to search.';dlg.showModal();return}
+  if(!Object.keys(AY).length)buildSearchIndex();
+  const hits=Object.entries(AY).filter(([k,v])=>{
+    const ar=normSearch(v.text),u=normSearch((ME.tu&&ME.tu[k])||''),e=normSearch((ME.te&&ME.te[k])||'');
+    return mode==='quran'?ar.includes(q):mode==='urdu'?u.includes(q):mode==='english'?e.includes(q):(ar.includes(q)||u.includes(q)||e.includes(q));
+  });
+  const label={quran:'Quran Arabic',urdu:'Urdu translation',english:'English translation',all:'all text'}[mode];
+  $('#searchStatus').textContent=hits.length?`${hits.length} matching ayah${hits.length===1?'':'s'} in ${label}`:'No matches found. Try fewer words or remove harakat.';
+  hits.slice(0,100).forEach(([k,v])=>{
+    const b=document.createElement('button');b.className='sr';
+    const t=document.createElement('span');t.className='ar';t.textContent=v.text.trim();b.append(t);
+    const u=ME.tu[k],en=ME.te[k];
+    if((mode==='urdu'||mode==='all')&&u){const x=document.createElement('span');x.className='tr ur';x.textContent=u;b.append(x)}
+    if((mode==='english'||mode==='all')&&en){const x=document.createElement('span');x.className='tr en';x.textContent=en;b.append(x)}
+    const sm=document.createElement('small');sm.textContent=`Surah ${k.split(':')[0]}, Ayah ${k.split(':')[1]} · Page ${v.page}`;b.append(sm);
+    b.onclick=()=>{dlg.close();go(v.page)};out.appendChild(b);
+  });
+  dlg.showModal();
+}
+$('#searchMode').onchange=e=>{const m=e.target.value,inp=$('#search');const rtl=m==='quran'||m==='urdu';inp.dir=rtl?'rtl':'ltr';inp.placeholder={quran:'Search Quran Arabic',urdu:'Search Urdu translation',english:'Search English translation',all:'Search Arabic, Urdu or English'}[m]};
+$('#searchBtn').onclick=searchQ;$('#search').addEventListener('keydown',e=>{if(e.key==='Enter')searchQ()});
 $('#exp').onclick=()=>{
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));
@@ -191,8 +243,9 @@ $('#imp').onchange=e=>{
 };
 
 window.H={get D(){return D},get S(){return S},get page(){return page},go,save,el,render};
+fetch('data/meanings.json').then(r=>r.ok?r.json():Promise.reject()).then(m=>{ME={tu:m.tu||{},te:m.te||{}}}).catch(()=>{});
 fetch('data/mushaf.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(async d=>{
-  D=d;
+  D=d;buildSearchIndex();
   D.surahs.forEach((n,i)=>$('#sur').add(new Option((i+1)+'. '+n,i+1)));
   for(let j=1;j<=30;j++)$('#juz').add(new Option('Juz '+j,j));
   try{await document.fonts.load('40px Khatt','\u0628\u0633\u0645')}catch(e){}
