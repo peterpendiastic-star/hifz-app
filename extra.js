@@ -16,6 +16,7 @@ document.head.appendChild(E('style',`
 dialog hr{border:0;border-top:1px solid var(--line)}
 dialog .row button[data-p]{min-height:34px}
 .mk{position:absolute;right:100%;margin-right:5px;direction:ltr;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.4)/1.15 Khatt,serif;color:var(--accent)}
+.mk.r{right:auto;left:100%;margin:0 0 0 5px;text-align:left;font-size:calc(var(--fs,40px)*.46);line-height:1.15}
 .g{font:26px Khatt,serif;display:inline-block;min-width:1.6em;text-align:center;color:var(--ink)}
 .df{color:#d9534f;font-weight:700}
 .dim{opacity:.5}
@@ -286,11 +287,20 @@ $('#two').setAttribute('aria-pressed',!!H.S.two);
 $('#two').onclick=()=>{H.S.two=!H.S.two;H.save();$('#two').setAttribute('aria-pressed',!!H.S.two);H.render()};
 /* ---------- margin marks: ruku and sajdah ---------- */
 const SAJ=new Set(['7:206','13:15','16:50','17:109','19:58','22:18','22:77','25:60','27:26','32:15','38:24','41:38','53:62','84:21','96:19']);
-let R={};
+let R={},RB={};
 function setR(j){const a=Array.isArray(j)?j:(j.ruku||j.rukus||[]),c={};R={};a.map(norm).filter(Boolean).forEach(k=>{const s=k.split(':')[0];R[k]=c[s]=(c[s]||0)+1});V&&hook()}
 try{fetch('data/ruku.json').then(r=>r.ok?r.json():0).then(j=>j&&setR(j)).catch(()=>{})}catch(x){}
+function setRub(j){
+  RB={};const add=(k,t)=>RB[k]=(RB[k]?RB[k]+'<br>':'')+t;
+  j.rub.forEach((k,i)=>{const r=i+1,q=(r-1)%4;
+    add(k,'\u06DE<br>'+(r%8==1?'\u062C\u0632\u0621 '+((r-1>>3)+1):q==0?'\u062D\u0632\u0628 '+((r-1>>2)+1):['','\u0631\u0628\u0639','\u0646\u0635\u0641','\u00BE'][q]))});
+  j.manzil.forEach((k,i)=>add(k,'\u0645\u0646\u0632\u0644 '+(i+1)));
+  V&&hook();
+}
+try{fetch('data/rub.json').then(r=>r.ok?r.json():0).then(j=>j&&setRub(j)).catch(()=>{})}catch(x){}
 function marks(){
   Q('.mk').forEach(m=>m.remove());
+  Q('.page .w[data-i="1"]').forEach(w=>{const t=RB[w.dataset.v];if(!t)return;const m=E('span',t);m.className='mk r';w.parentNode.appendChild(m)});
   Q('.page .w[data-v]').forEach(w=>{
     if(w.textContent.charCodeAt(0)!=0x6dd)return;
     const k=w.dataset.v,t=[R[k]?'\u0639'+R[k]:'',SAJ.has(k)?'\u06E9':''].filter(Boolean).join('<br>');
@@ -300,7 +310,7 @@ function marks(){
 }
 window.hook=()=>{
   if(!V)build();
-  theme();fillAud();mark();marks();tag();
+  theme();fillAud();mark();tag();marks();
   Q('.page .w[data-v]').forEach(w=>w.classList.toggle('m',H.S.sim!==false&&(!!M[w.dataset.v]||cov(w.dataset.v,+w.dataset.i).length>0)));
 };
 if(H.D)hook();
