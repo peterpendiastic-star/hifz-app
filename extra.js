@@ -4,19 +4,32 @@ const E=(t,h)=>{const e=document.createElement(t);e.innerHTML=h||'';return e};
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const loc=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const gap=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
+const OFF=()=>H.S.off===undefined?1:H.S.off;
+const num=n=>String(n).replace(/\d/g,d=>'\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669'[d]);
+window.AR='الفاتحة,البقرة,آل عمران,النساء,المائدة,الأنعام,الأعراف,الأنفال,التوبة,يونس,هود,يوسف,الرعد,إبراهيم,الحجر,النحل,الإسراء,الكهف,مريم,طه,الأنبياء,الحج,المؤمنون,النور,الفرقان,الشعراء,النمل,القصص,العنكبوت,الروم,لقمان,السجدة,الأحزاب,سبأ,فاطر,يس,الصافات,ص,الزمر,غافر,فصلت,الشورى,الزخرف,الدخان,الجاثية,الأحقاف,محمد,الفتح,الحجرات,ق,الذاريات,الطور,النجم,القمر,الرحمن,الواقعة,الحديد,المجادلة,الحشر,الممتحنة,الصف,الجمعة,المنافقون,التغابن,الطلاق,التحريم,الملك,القلم,الحاقة,المعارج,نوح,الجن,المزمل,المدثر,القيامة,الإنسان,المرسلات,النبأ,النازعات,عبس,التكوير,الانفطار,المطففين,الانشقاق,البروج,الطارق,الأعلى,الغاشية,الفجر,البلد,الشمس,الليل,الضحى,الشرح,التين,العلق,القدر,البينة,الزلزلة,العاديات,القارعة,التكاثر,العصر,الهمزة,الفيل,قريش,الماعون,الكوثر,الكافرون,النصر,المسد,الإخلاص,الفلق,الناس'.split(',');
+const JN='الم,سيقول,تلك الرسل,لن تنالوا,والمحصنات,لا يحب الله,وإذا سمعوا,ولو أننا,قال الملأ,واعلموا,يعتذرون,وما من دابة,وما أبرئ,ربما,سبحان الذي,قال ألم,اقترب للناس,قد أفلح,وقال الذين,أمن خلق,اتل ما أوحي,ومن يقنت,وما لي,فمن أظلم,إليه يرد,حم,قال فما خطبكم,قد سمع الله,تبارك الذي,عم'.split(',');
 let P={},PH={},V=null,M={},q=[],qi=0,ri=0,rr=0,playing=false;
 const A=new Audio();
 
 document.head.appendChild(E('style',`
+[data-dir=ltr] footer{flex-direction:row-reverse}
 .w.m{text-decoration:underline dotted var(--accent) 2px;text-underline-offset:.3em}
 .w.hid:not(.r).m{text-decoration:none}
 .w.pl{background:var(--tint);border-radius:.18em}
 #aud{display:none}#aud.on{display:flex}
 dialog hr{border:0;border-top:1px solid var(--line)}
 dialog .row button[data-p]{min-height:34px}
-.mk{position:absolute;direction:rtl;white-space:nowrap;font:calc(var(--fs,40px)*.38)/1.1 Khatt,serif;color:var(--accent);z-index:3;pointer-events:none;min-width:1.6em}
-.mk.out-left{right:100%;margin-right:7px;text-align:right}
-.mk.out-right{left:100%;margin-left:7px;text-align:left}
+.mk{position:absolute;right:100%;margin-right:5px;direction:ltr;text-align:right;white-space:nowrap;font:calc(var(--fs,40px)*.4)/1.15 Khatt,serif;color:var(--accent)}
+.page{position:relative}
+main{padding-top:34px;padding-bottom:34px}
+.hd,.ft{position:absolute;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-end;direction:ltr;color:var(--ink);font:calc(var(--fs,40px)*.78)/1.3 Khatt,serif;white-space:nowrap}
+.hd{bottom:100%;padding:0 4px 2px}
+.hd b{font-weight:700;font-size:1.35em}
+.ft{top:100%;justify-content:center;padding-top:2px}
+.sur b{font:calc(var(--fs,40px)*.78)/1.3 Khatt,serif}
+.page{min-height:calc(var(--fs,40px)*27.2 + 30px)}
+.mk.r{right:auto;left:100%;margin:0 0 0 5px;text-align:left;font-size:calc(var(--fs,40px)*.62);line-height:1.15}
+[data-rule=on] .page .line:not(.sur):not(:last-child){border-bottom:1px solid var(--line);border-bottom-color:color-mix(in srgb,var(--ink) 24%,transparent)}
 .g{font:26px Khatt,serif;display:inline-block;min-width:1.6em;text-align:center;color:var(--ink)}
 .df{color:#d9534f;font-weight:700}
 .dim{opacity:.5}
@@ -34,7 +47,6 @@ dialog .row button[data-p]{min-height:34px}
 input[type=checkbox]{min-height:auto;width:20px;height:20px}
 .hl{background:var(--tint);color:var(--accent);border-radius:.2em}
 dialog{max-height:88vh;overflow:auto}
-.theme-item{display:block;width:100%;text-align:left;margin:7px 0;padding:10px;min-height:auto;white-space:normal}.theme-item b{display:block;color:var(--ink);font-weight:650}.theme-item span,.theme-item small{display:block;margin-top:4px;color:var(--muted);line-height:1.4}.theme-item small{font-size:.78rem}.theme-item:hover{border-color:var(--accent);background:var(--tint)}
 .ar{font:28px/1.9 Khatt,serif;direction:rtl;color:var(--ink)!important}
 `));
 
@@ -42,24 +54,34 @@ dialog{max-height:88vh;overflow:auto}
 const PRE={Light:['#e8eeeb','#ffffff','#14231f','#0e5a4a'],Sepia:['#e9dcc3','#f6ecd6','#3b2f1e','#7a4a1c'],Dark:['#0d1513','#15201d','#e6efe9','#5fc3a6'],Black:['#000000','#000000','#e8e8e8','#5fc3a6']};
 const cur=()=>{const g=k=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim();return{bg:g('bg'),paper:g('paper'),ink:g('ink'),accent:g('accent')}};
 function theme(){
-  const r=document.documentElement.style,T=H.S.theme,ltr=false;
+  const r=document.documentElement.style,T=H.S.theme,ltr=H.S.dir=='ltr';
   ['bg','paper','ink','accent'].forEach(k=>T?r.setProperty('--'+k,T[k]):r.removeProperty('--'+k));
   [['--mask',18],['--tint',12]].forEach(([p,n])=>T?r.setProperty(p,'color-mix(in srgb,'+T.ink+' '+n+'%,transparent)'):r.removeProperty(p));
-  document.documentElement.dataset.dir='ar';
+  document.documentElement.dataset.dir=ltr?'ltr':'ar';
+  document.documentElement.dataset.rule=H.S.rule===false?'off':'on';
+  $('#rl').checked=H.S.rule!==false;$('#po').value=OFF();
   $('#nx').textContent=ltr?'Next page \u25B6':'\u25C0 Next page';
   $('#pv').textContent=ltr?'\u25C0 Previous page':'Previous page \u25B6';
-  const c=cur();$('#cb').value=c.bg;$('#cp').value=c.paper;$('#ct').value=c.ink;
+  const c=cur();$('#cb').value=c.bg;$('#cp').value=c.paper;$('#ct').value=c.ink;$('#dr').value=ltr?'ltr':'ar';
 }
 const dlg=$('#dlg');
 dlg.insertBefore(E('div',`<h2>Meanings</h2><p>Tap a word to see these.</p><div class="row"><label><input type="checkbox" id="lwu"> Word: Urdu</label><label><input type="checkbox" id="lwe"> Word: English</label><label><input type="checkbox" id="ltu"> Translation: Urdu</label><label><input type="checkbox" id="lte"> Translation: English</label></div>`),dlg.children[0]);
+dlg.insertBefore(E('div','<h2>Page</h2><div class="row"><label><input type="checkbox" id="lrl"> Show lines between the text lines</label></div>'),dlg.children[0]);
+$('#lrl').checked=H.S.rule!==false;$('#lrl').onchange=()=>{H.S.rule=$('#lrl').checked;H.save();theme()};
 ['wu','we','tu','te'].forEach(id=>{const c=$('#l'+id);c.checked=(H.S.lg||{})[id]!=0;c.onchange=()=>{H.S.lg=Object.assign({wu:1,we:1,tu:1,te:1},H.S.lg||{});H.S.lg[id]=c.checked?1:0;H.save()}});
 dlg.insertBefore(E('div',`<h2>Display</h2>
 <div class="row"><label>Theme <select id="th"><option value="">Auto (device)</option>${Object.keys(PRE).map(k=>`<option>${k}</option>`).join('')}</select></label></div>
 <div class="row"><label>Screen <input type="color" id="cb"></label><label>Page <input type="color" id="cp"></label><label>Text <input type="color" id="ct"></label></div>
+<div class="row"><label><input type="checkbox" id="rl"> Line dividers</label></div>
+<div class="row"><label>Header page number <select id="po"><option value="1">App page + 1 (as in your reference)</option><option value="0">Same as app page</option></select></label></div>
+<div class="row"><label>Page turning <select id="dr"><option value="ar">Arabic: next page on the left</option><option value="ltr">Left to right: next page on the right</option></select></label></div>
 <h2>Signs guide</h2><p><span class="g">\u06D8</span> Stop here (م)</p><p><span class="g">\u06D9</span> Do not stop (لا)</p><p><span class="g">\u06D7</span> Stopping is better (قلے)</p><p><span class="g">\u06D6</span> Continuing is better (صلے)</p><p><span class="g">\u06DA</span> Stop or continue, both fine (ج)</p><p><span class="g">\u0615</span> Stopping is fine (ط)</p><p><span class="g">\u06DB</span> Stop at one of the two dots, not both (معانقہ)</p><p><span class="g">\u06E9</span> Sajdah: prostration</p><p><span class="g">\u0639</span> Ruku ends here; the number counts rukus in the surah</p><h2>Mutashabihat</h2><p id="mst"></p>
 <div class="row"><label>Import JSON <input type="file" id="mi" accept=".json,application/json"></label></div>`),dlg.children[0]);
 $('#th').onchange=e=>{const v=e.target.value;H.S.theme=v?{bg:PRE[v][0],paper:PRE[v][1],ink:PRE[v][2],accent:PRE[v][3]}:null;H.save();theme()};
 ['cb','cp','ct'].forEach((id,i)=>$('#'+id).oninput=e=>{const T=H.S.theme||cur();T[['bg','paper','ink'][i]]=e.target.value;H.S.theme=T;H.save();theme()});
+$('#rl').onchange=e=>{H.S.rule=e.target.checked;H.save();theme()};
+$('#po').onchange=e=>{H.S.off=+e.target.value;H.save();frames()};
+$('#dr').onchange=e=>{H.S.dir=e.target.value;H.save();theme()};
 
 /* ---------- verse index ---------- */
 function build(){
@@ -74,7 +96,7 @@ function build(){
 }
 function tag(){
   [[H.el,H.page],[$('#page2'),H.page+1]].forEach(([pe,pn])=>{
-    if(pe.hidden)return;const ls=pe.querySelectorAll('.page-frame > .line');
+    if(pe.hidden)return;const ls=pe.children;
     H.D.pages[pn-1].forEach((l,i)=>{if(l[0]||!ls[i])return;ls[i].querySelectorAll('.w').forEach((w,j)=>{w.dataset.i=l[4][j]})});
   });
 }
@@ -272,74 +294,13 @@ $('#ap').onclick=()=>{
   q=ks.slice(f,t+1);qi=ri=rr=0;playing=true;$('#ap').textContent='Stop';next();
 };
 
-/* ---------- themes and matching ayahs data ---------- */
-let THEMES=[], SIM={};
-const td=E('dialog');
-td.id='themeDlg';
-td.innerHTML=`<h2>Quran themes</h2>
-<p>Browse the thematic ranges in the uploaded Ayah Themes database, or search by theme or keyword.</p>
-<div class="row"><input id="themeSearch" type="search" placeholder="Search themes (English)" style="flex:1;min-width:220px"><button id="themeSearchBtn">Search</button></div>
-<p id="themeStatus" role="status"></p><div id="themeResults"></div>
-<div class="row"><button data-close-theme>Close</button></div>`;
-document.body.appendChild(td);
-const sd=E('dialog');
-sd.id='similarDlg';
-sd.innerHTML=`<h2>Similar ayahs</h2><p id="similarStatus"></p><div id="similarResults"></div><div class="row"><button data-close-sim>Close</button></div>`;
-document.body.appendChild(sd);
-function loadExploreData(){
-  return Promise.all([
-    THEMES.length?Promise.resolve(THEMES):fetch('data/themes.json').then(r=>r.json()).then(j=>(THEMES=j)),
-    Object.keys(SIM).length?Promise.resolve(SIM):fetch('data/similar-ayahs.json').then(r=>r.json()).then(j=>(SIM=j))
-  ]);
-}
-function themeItem(t){
-  const sn=H.D.surahs[t.surah-1]||('Surah '+t.surah);
-  const range=`${sn}, ayah ${t.from}${t.to!==t.from?'–'+t.to:''}`;
-  const pages=t.endPage&&t.endPage!==t.page?`Pages ${t.page}–${t.endPage}`:`Page ${t.page||'?'}`;
-  return `<button class="theme-item" data-theme-page="${t.page||1}"><b>${esc(t.theme)}</b><span>${esc(range)} · ${pages}</span>${t.keywords?`<small>Keyword: ${esc(t.keywords)}</small>`:''}</button>`;
-}
-function renderThemes(q=''){
-  const out=$('#themeResults'),status=$('#themeStatus');out.innerHTML='';
-  const n=normSearch(q);
-  let arr=THEMES.filter(t=>!n||normSearch(t.theme).includes(n)||normSearch(t.keywords).includes(n));
-  if(!n&&H.page){
-    const current=arr.filter(t=>t.page&&t.endPage&&H.page>=t.page&&H.page<=t.endPage);
-    const rest=arr.filter(t=>!current.includes(t));
-    status.textContent=current.length?`${current.length} theme${current.length===1?'':'s'} covering page ${H.page}`:'No theme range starts on this page; showing the theme index.';
-    arr=current.concat(rest);
-  }else status.textContent=`${arr.length} matching theme${arr.length===1?'':'s'}`;
-  arr.slice(0,80).forEach(t=>{out.insertAdjacentHTML('beforeend',themeItem(t))});
-  if(arr.length>80)out.insertAdjacentHTML('beforeend',`<p>Showing first 80 results. Refine your search for more.</p>`);
-}
-function showThemes(){
-  loadExploreData().then(()=>{renderThemes($('#themeSearch').value||'');if(!td.open)td.showModal()}).catch(()=>{ $('#themeStatus').textContent='Could not load the theme data.';if(!td.open)td.showModal()});
-}
-td.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.closeTheme!==undefined)return td.close();if(b.dataset.themePage){td.close();H.go(+b.dataset.themePage)}};
-$('#themeSearchBtn').onclick=()=>renderThemes($('#themeSearch').value);
-$('#themeSearch').addEventListener('keydown',e=>{if(e.key==='Enter')renderThemes(e.target.value)});
-function showSimilar(){
-  const keys=pk(),out=$('#similarResults'),status=$('#similarStatus');out.innerHTML='';
-  loadExploreData().then(()=>{
-    let rows=[];keys.forEach(k=>(SIM[k]||[]).slice(0,8).forEach(x=>rows.push([k,x])));
-    rows.sort((a,b)=>b[1].score-a[1].score||b[1].coverage-a[1].coverage);
-    status.textContent=rows.length?`Top matches for ayahs on page ${H.page}. Matches are ranked by the supplied score.`:'No matching ayahs were found for this page.';
-    rows.slice(0,60).forEach(([src,x])=>{
-      const b=E('button',`<b>${esc(nm(src))}</b> ↔ <b>${esc(nm(x.ayah))}</b><span>Score ${x.score} · ${x.coverage}% coverage · ${x.words} matching words · page ${V[x.ayah]?V[x.ayah].p:'?'}</span>`);
-      b.className='theme-item';b.dataset.simPage=V[x.ayah]?V[x.ayah].p:1;b.dataset.simAyah=x.ayah;out.appendChild(b);
-    });
-    if(!sd.open)sd.showModal();
-  }).catch(()=>{status.textContent='Could not load the matching-ayah data.';if(!sd.open)sd.showModal()});
-}
-sd.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.closeSim!==undefined)return sd.close();if(b.dataset.simPage){sd.close();H.go(+b.dataset.simPage)}};
 /* ---------- header buttons ---------- */
 const bar=$('.ctl');
-[['mean','Meanings'],['plan','Plan'],['aub','Audio'],['sim','Mutashabihat'],['themes','Themes'],['similar','Similar ayahs'],['two','Two pages']].forEach(([id,t])=>{const b=E('button',t);b.id=id;bar.appendChild(b)});
+[['mean','Meanings'],['plan','Plan'],['aub','Audio'],['sim','Mutashabihat'],['two','Two pages']].forEach(([id,t])=>{const b=E('button',t);b.id=id;bar.appendChild(b)});
 $('#plan').onclick=()=>{planUI();pd.showModal()};
 $('#aub').onclick=()=>{const on=$('#aud').classList.toggle('on');$('#aub').setAttribute('aria-pressed',on);if(!on&&playing)stop();dispatchEvent(new Event('resize'))};
 $('#sim').setAttribute('aria-pressed',H.S.sim!==false);
 $('#sim').onclick=()=>{H.S.sim=H.S.sim===false;H.save();$('#sim').setAttribute('aria-pressed',H.S.sim!==false);hook()};
-$('#themes').onclick=showThemes;
-$('#similar').onclick=showSimilar;
 
 $('#mean').setAttribute('aria-pressed',H.S.mean!==false);
 $('#mean').onclick=()=>{H.S.mean=H.S.mean===false;H.save();$('#mean').setAttribute('aria-pressed',H.S.mean!==false)};
@@ -347,40 +308,41 @@ $('#two').setAttribute('aria-pressed',!!H.S.two);
 $('#two').onclick=()=>{H.S.two=!H.S.two;H.save();$('#two').setAttribute('aria-pressed',!!H.S.two);H.render()};
 /* ---------- margin marks: ruku and sajdah ---------- */
 const SAJ=new Set(['7:206','13:15','16:50','17:109','19:58','22:18','22:77','25:60','27:26','32:15','38:24','41:38','53:62','84:21','96:19']);
-let R={},RB={};
+let R={},RB={},RUB=[],MZ=[],PO=null;
 function setR(j){const a=Array.isArray(j)?j:(j.ruku||j.rukus||[]),c={};R={};a.map(norm).filter(Boolean).forEach(k=>{const s=k.split(':')[0];R[k]=c[s]=(c[s]||0)+1});V&&hook()}
 try{fetch('data/ruku.json').then(r=>r.ok?r.json():0).then(j=>j&&setR(j)).catch(()=>{})}catch(x){}
 function setRub(j){
-  RB={};const add=(k,t)=>RB[k]=(RB[k]?RB[k]+'<br>':'')+t;
+  RB={};RUB=j.rub;MZ=j.manzil;
   j.rub.forEach((k,i)=>{const r=i+1,q=(r-1)%4;
-    add(k,'\u06DE<br>'+(r%8==1?'\u062C\u0632\u0621 '+((r-1>>3)+1):q==0?'\u062D\u0632\u0628 '+((r-1>>2)+1):['','\u0631\u0628\u0639','\u0646\u0635\u0641','\u00BE'][q]))});
-  j.manzil.forEach((k,i)=>add(k,'\u0645\u0646\u0632\u0644 '+(i+1)));
+    RB[k]='\u06DE<br>'+(r%8==1?'\u062C\u0632\u0621 '+num((r-1>>3)+1):q==0?'\u062D\u0632\u0628 '+num((r-1>>2)+1):['','\u0631\u0628\u0639','\u0646\u0635\u0641','\u062B\u0644\u0627\u062B\u0629'][q])});
   V&&hook();
 }
 try{fetch('data/rub.json').then(r=>r.ok?r.json():0).then(j=>j&&setRub(j)).catch(()=>{})}catch(x){}
 function marks(){
   Q('.mk').forEach(m=>m.remove());
-  Q('.page').forEach(pe=>{
-    const pn=pe===H.el?H.page:H.page+1;
-    const side=(pn%2===1)?'right':'left';
-    const cls=side==='right'?'out-right':'out-left';
-    pe.querySelectorAll('.w[data-i="1"]').forEach(w=>{
-      const t=RB[w.dataset.v];if(!t)return;
-      const m=E('span',t);m.className='mk '+cls;w.parentNode.appendChild(m);
-    });
-    pe.querySelectorAll('.w[data-v]').forEach(w=>{
-      if(w.textContent.charCodeAt(0)!=0x6dd)return;
-      const k=w.dataset.v;
-      const t=[R[k]?'\u0639'+R[k]:'',SAJ.has(k)?'\u06E9':''].filter(Boolean).join('<br>');
-      if(!t)return;
-      const m=E('span',t);m.className='mk '+cls;w.parentNode.appendChild(m);
-    });
+  const L=new Map(),add=(w,t)=>{const l=w.parentNode;(L.get(l)||L.set(l,[]).get(l)).push(t)};
+  Q('.page .w[data-i="1"]').forEach(w=>{const t=RB[w.dataset.v];t&&add(w,t)});
+  Q('.page .w[data-v]').forEach(w=>{
+    if(w.textContent.charCodeAt(0)!=0x6dd)return;
+    const k=w.dataset.v,t=[R[k]?'\u0639'+num(R[k]):'',SAJ.has(k)?'\u06E9':''].filter(Boolean).join(' ');
+    t&&add(w,t);
+  });
+  L.forEach((a,l)=>{const m=E('span',a.join('<br>'));m.className='mk r';l.appendChild(m)});
+}
+function frames(){
+  [[H.el,H.page],[$('#page2'),H.page+1]].forEach(([pe,pn])=>{
+    pe.querySelectorAll('.hd,.ft').forEach(e=>e.remove());
+    if(pe.hidden||!PO)return;
+    const f=H.D.pages[pn-1].find(l=>l[0]==0);if(!f)return;
+    const p=PO[f[3]],s=+f[3].split(':')[0],j=RUB.filter((k,i)=>i%8==0&&PO[k]<=p).length,z=MZ.filter(k=>PO[k]<=p).length;
+    const h=E('div',`<span>${AR[s-1]} ${num(s)}</span><b>${num(pn+OFF())}</b><span>${j?JN[j-1]:''}</span>`);h.className='hd';pe.appendChild(h);
+    if(z){const t=E('div','\u0645\u0646\u0632\u0644 '+num(z));t.className='ft';pe.appendChild(t)}
   });
 }
-
 window.hook=()=>{
   if(!V)build();
-  theme();fillAud();mark();tag();marks();
+  if(!PO){PO={};Object.keys(V).forEach((k,i)=>PO[k]=i)}
+  theme();fillAud();mark();tag();marks();frames();
   Q('.page .w[data-v]').forEach(w=>w.classList.toggle('m',H.S.sim!==false&&(!!M[w.dataset.v]||cov(w.dataset.v,+w.dataset.i).length>0)));
 };
 if(H.D)hook();
