@@ -135,7 +135,7 @@ function fit(){
   let max=1;
   P.forEach(p=>{p.style.setProperty('--fs','40px');
     p.querySelectorAll('.line:not(.sur):not(.c)').forEach(d=>{let w=0;const ws=d.querySelectorAll('.w');ws.forEach(c=>w+=c.offsetWidth);w+=(ws.length-1)*8;max=Math.max(max,w)})});
-  const aw=Math.min((innerWidth-(document.body.classList.contains('full-reader')?24:50)-(n-1)*30)/n-G,700);
+  const full=document.body.classList.contains('full-reader');const side=full?(innerWidth<=600?12:128):50;const aw=Math.min((innerWidth-side-(n-1)*30)/n-G,700);
   const ah=innerHeight-$('header').offsetHeight-$('footer').offsetHeight-86;
   const fs=Math.max(10,Math.min(40*aw/max,ah/(16*LH),60));
   P.forEach(p=>{p.style.setProperty('--fs',fs+'px');p.style.width=Math.ceil(max*fs/40)+G+'px'});
