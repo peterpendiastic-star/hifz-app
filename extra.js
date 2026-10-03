@@ -41,13 +41,13 @@ dialog{max-height:88vh;overflow:auto}
 const PRE={Light:['#e8eeeb','#ffffff','#14231f','#0e5a4a'],Sepia:['#e9dcc3','#f6ecd6','#3b2f1e','#7a4a1c'],Dark:['#0d1513','#15201d','#e6efe9','#5fc3a6'],Black:['#000000','#000000','#e8e8e8','#5fc3a6']};
 const cur=()=>{const g=k=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim();return{bg:g('bg'),paper:g('paper'),ink:g('ink'),accent:g('accent')}};
 function theme(){
-  const r=document.documentElement.style,T=H.S.theme,ltr=H.S.dir=='ltr';
+  const r=document.documentElement.style,T=H.S.theme,ltr=false;
   ['bg','paper','ink','accent'].forEach(k=>T?r.setProperty('--'+k,T[k]):r.removeProperty('--'+k));
   [['--mask',18],['--tint',12]].forEach(([p,n])=>T?r.setProperty(p,'color-mix(in srgb,'+T.ink+' '+n+'%,transparent)'):r.removeProperty(p));
-  document.documentElement.dataset.dir=ltr?'ltr':'ar';
+  document.documentElement.dataset.dir='ar';
   $('#nx').textContent=ltr?'Next page \u25B6':'\u25C0 Next page';
   $('#pv').textContent=ltr?'\u25C0 Previous page':'Previous page \u25B6';
-  const c=cur();$('#cb').value=c.bg;$('#cp').value=c.paper;$('#ct').value=c.ink;$('#dr').value=ltr?'ltr':'ar';
+  const c=cur();$('#cb').value=c.bg;$('#cp').value=c.paper;$('#ct').value=c.ink;
 }
 const dlg=$('#dlg');
 dlg.insertBefore(E('div',`<h2>Meanings</h2><p>Tap a word to see these.</p><div class="row"><label><input type="checkbox" id="lwu"> Word: Urdu</label><label><input type="checkbox" id="lwe"> Word: English</label><label><input type="checkbox" id="ltu"> Translation: Urdu</label><label><input type="checkbox" id="lte"> Translation: English</label></div>`),dlg.children[0]);
@@ -55,12 +55,10 @@ dlg.insertBefore(E('div',`<h2>Meanings</h2><p>Tap a word to see these.</p><div c
 dlg.insertBefore(E('div',`<h2>Display</h2>
 <div class="row"><label>Theme <select id="th"><option value="">Auto (device)</option>${Object.keys(PRE).map(k=>`<option>${k}</option>`).join('')}</select></label></div>
 <div class="row"><label>Screen <input type="color" id="cb"></label><label>Page <input type="color" id="cp"></label><label>Text <input type="color" id="ct"></label></div>
-<div class="row"><label>Page turning <select id="dr"><option value="ar">Arabic: next page on the left</option><option value="ltr">Left to right: next page on the right</option></select></label></div>
 <h2>Signs guide</h2><p><span class="g">\u06D8</span> Stop here (م)</p><p><span class="g">\u06D9</span> Do not stop (لا)</p><p><span class="g">\u06D7</span> Stopping is better (قلے)</p><p><span class="g">\u06D6</span> Continuing is better (صلے)</p><p><span class="g">\u06DA</span> Stop or continue, both fine (ج)</p><p><span class="g">\u0615</span> Stopping is fine (ط)</p><p><span class="g">\u06DB</span> Stop at one of the two dots, not both (معانقہ)</p><p><span class="g">\u06E9</span> Sajdah: prostration</p><p><span class="g">\u0639</span> Ruku ends here; the number counts rukus in the surah</p><h2>Mutashabihat</h2><p id="mst"></p>
 <div class="row"><label>Import JSON <input type="file" id="mi" accept=".json,application/json"></label></div>`),dlg.children[0]);
 $('#th').onchange=e=>{const v=e.target.value;H.S.theme=v?{bg:PRE[v][0],paper:PRE[v][1],ink:PRE[v][2],accent:PRE[v][3]}:null;H.save();theme()};
 ['cb','cp','ct'].forEach((id,i)=>$('#'+id).oninput=e=>{const T=H.S.theme||cur();T[['bg','paper','ink'][i]]=e.target.value;H.S.theme=T;H.save();theme()});
-$('#dr').onchange=e=>{H.S.dir=e.target.value;H.save();theme()};
 
 /* ---------- verse index ---------- */
 function build(){
@@ -75,7 +73,7 @@ function build(){
 }
 function tag(){
   [[H.el,H.page],[$('#page2'),H.page+1]].forEach(([pe,pn])=>{
-    if(pe.hidden)return;const ls=pe.children;
+    if(pe.hidden)return;const ls=pe.querySelectorAll('.page-frame > .line');
     H.D.pages[pn-1].forEach((l,i)=>{if(l[0]||!ls[i])return;ls[i].querySelectorAll('.w').forEach((w,j)=>{w.dataset.i=l[4][j]})});
   });
 }
